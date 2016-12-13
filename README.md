@@ -10,4 +10,4 @@ Input: Fastq file or directory containing fastq files
 	
 	OPTIONS
 	-r, --reference   reference in fasta format
-	-n, --reads       limit number of reads (default all)
+	-n, --reads       number of reads (default all)
