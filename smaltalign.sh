@@ -2,8 +2,9 @@
 
 ### defaults
 script_dir=$( dirname "$(readlink -f "$0")" )
-n=100000
+n_reads=100000
 min_cov=3
+iterations=2
 
 ### arguments
 if [ $# == 0 ]; then
@@ -13,6 +14,7 @@ if [ $# == 0 ]; then
 	echo '  -r       reference'
 	echo '  -n INT   number of reads (default 100,000)'
 	echo '  -c INT   minimal coverage (default 3)'
+	echo '  -i INT   iterations (default 2)'
 	echo
 	exit
 fi
@@ -29,7 +31,11 @@ while [[ $# -gt 1 ]]; do
 		shift # past argument
 		;;
 		-n)
-		n="$2"
+		n_reads="$2"
+		shift # past argument
+		;;
+		-i)
+		iterations="$2"
 		shift # past argument
 		;;
 		*)
@@ -53,6 +59,9 @@ echo -e 'script_dir: ' $script_dir
 echo -e 'ref: ' $ref
 echo -e 'n: ' $n
 echo -e 'min_cov: ' $min_cov
+echo -e 'iterations: ' $iterations
+
+
 
 ### make list of files to analyse
 if [ -d $sample_dir ]; then list=$(ls $sample_dir | grep .fastq); else list=$sample_dir; fi
@@ -61,41 +70,52 @@ if [ -d $sample_dir ]; then list=$(ls $sample_dir | grep .fastq); else list=$sam
 for i in $list; do
 	
 	name=$(basename $i | sed 's/_L001_R.*//' | sed 's/.fastq.gz//'| sed 's/.fastq//')
-	echo $name
-	echo ----------------------------------------
 	
 	### unzip fastq file if necessary, sample reads with seqtk
 	if [[ $i =~ \.gz$ ]]
 		then
-			gunzip -c $i > ${name}_unzipped.fastq
-			seqtk sample ${name}_unzipped.fastq $n > ${name}_reads.fastq
+			gunzip -c $i | seqtk sample - $n_reads > ${name}_reads.fastq
 		else
-			seqtk sample $i $n > ${name}_reads.fastq
+			seqtk sample $i $n_reads > ${name}_reads.fastq
 		fi
-		
-	### align with smalt to reference
-	smalt index -k 7 -s 2 smalt_index $ref
-	smalt map -n 28 -x -f samsoft -o ${name}.sam smalt_index ${name}_reads.fastq
-	samtools view -Su ${name}.sam | samtools sort - ${name}
-	samtools index ${name}.bam	
-
-	### create consensus wiht freebayes
-	freebayes -f $ref -p 1 ${name}.bam > ${name}.vcf	
-	vcf2fasta -f $ref -p ${name}_ -P 1 ${name}.vcf
-	mv ${name}_unknown* ${name}_cons.fasta
-
-	### create vcf with lofreq
-	rm ${name}_lofreq.vcf
-	lofreq call -f $ref -o ${name}_lofreq.vcf ${name}.bam
 	
-	### calculate depth, run gap_cons.py
-	samtools depth ${name}.bam > ${name}.depth
-	$script_dir/gapcons.py ${name}_cons.fasta ${name}.depth $min_cov
+	it=1
+	while [ "$it" -le "$iterations" ]; do		
+		echo
+		echo sample $name iteration $it
+		echo "***************************"
+		
+		### align with smalt to reference
+		smalt index -k 7 -s 2 smalt_index $ref
+		smalt map -n 28 -x -f samsoft -o ${name}_${it}.sam smalt_index ${name}_reads.fastq
+		samtools view -Su ${name}_${it}.sam | samtools sort - ${name}_${it}
+		samtools index ${name}_${it}.bam	
+
+		### create consensus wiht freebayes
+		freebayes -f $ref -p 1 ${name}_${it}.bam > ${name}_${it}.vcf	
+		vcf2fasta -f $ref -p ${name}_${it}_ -P 1 ${name}_${it}.vcf
+		mv ${name}_${it}_unknown* ${name}_${it}_cons.fasta
+
+		### create vcf with lofreq
+		rm ${name}_${it}_lofreq.vcf
+		lofreq call -f $ref -o ${name}_${it}_lofreq.vcf ${name}_${it}.bam
+	
+		### calculate depth, run gap_cons.py
+		samtools depth ${name}_${it}.bam > ${name}_${it}.depth
+		$script_dir/gapcons.py ${name}_${it}_cons.fasta ${name}_${it}.depth $min_cov
+	
+		### remove temporary files of this iteration
+		rm ${name}_${it}.sam
+		rm ${name}_${it}.vcf
+		rm smalt_index.*
+		rm *.fasta.fai
+		
+		### new ref for next iteration
+		ref=${name}_${it}_cons.fasta
+		((it+=1))
+	done
 	
 	### remove temporary files
-	rm ${name}.sam
-	rm ${name}.vcf
 	rm ${name}_reads.fastq
-	rm ${name}_unzipped.fastq
 	
 done
