@@ -1,8 +1,10 @@
 library(tidyverse)
 
 path = "/Volumes/huber.michael/HCV/experiments/161212/"
-files = list.files(path, pattern = "_lofreq.vcf")
+#args = commandArgs()
+#path = args[1]
 
+files = list.files(path, pattern = "_lofreq.vcf")
 INFO_lofreq = c("DP", "AF", "SB", "DP4")
 
 for (i in files) {
@@ -27,10 +29,11 @@ for (i in files) {
                 mutate(SEQ = ifelse(cons == REF, cons, paste0(REF, "*"))) %>%
                 mutate(SEQ = ifelse(is.na(REF), cons, SEQ)) %>%
                 select(POS, SEQ, ALT, AF, DP) %>%
-                filter(POS >= 3000 & POS <= 10000)
+                filter(POS >= 3200 & POS <= 10000) ### filter for amplicon position
         
         DUPL = duplicated(comb_data$POS)
         comb_data = cbind(comb_data, DUPL)
         
         write.csv(comb_data, paste0(path, name_i, ".csv"))
-        }
+}
+

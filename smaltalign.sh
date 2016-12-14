@@ -4,7 +4,7 @@
 script_dir=$( dirname "$(readlink -f "$0")" )
 n_reads=100000
 min_cov=3
-iterations=2
+iterations=3
 
 ### arguments
 if [ $# == 0 ]; then
@@ -57,11 +57,9 @@ sample_dir=$( readlink -f $sample_dir )
 echo -e 'sample_dir: ' $sample_dir
 echo -e 'script_dir: ' $script_dir
 echo -e 'ref: ' $ref
-echo -e 'n: ' $n
+echo -e 'n_reads: ' $n_reads
 echo -e 'min_cov: ' $min_cov
 echo -e 'iterations: ' $iterations
-
-
 
 ### make list of files to analyse
 if [ -d $sample_dir ]; then list=$(ls $sample_dir | grep .fastq); else list=$sample_dir; fi
@@ -78,7 +76,13 @@ for i in $list; do
 		else
 			seqtk sample $i $n_reads > ${name}_reads.fastq
 		fi
-	
+		
+	### de novo aligment
+	#velveth ${name} 29 -fastq ${name}_reads.fastq
+	#velvetg ${name}
+	#seqtk seq -A ${name}_reads.fastq > ${name}_reads.fasta
+	#cat ${name}_reads.fasta ${name}/contigs.fa ${name}/contigs.fa ${name}/contigs.fa > ${name}_reads_contigs.fasta
+		
 	it=1
 	while [ "$it" -le "$iterations" ]; do		
 		echo
@@ -87,7 +91,7 @@ for i in $list; do
 		
 		### align with smalt to reference
 		smalt index -k 7 -s 2 smalt_index $ref
-		smalt map -n 28 -x -f samsoft -o ${name}_${it}.sam smalt_index ${name}_reads.fastq
+		smalt map -n 28 -x -f samsoft -o ${name}_${it}.sam smalt_index ${name}_reads.fastq #### ${name}_reads.fastq or ${name}_reads_contigs.fasta
 		samtools view -Su ${name}_${it}.sam | samtools sort - ${name}_${it}
 		samtools index ${name}_${it}.bam	
 
@@ -119,3 +123,7 @@ for i in $list; do
 	rm ${name}_reads.fastq
 	
 done
+
+### Run spreadvcf.R
+#wd=$(pwd)
+#Rscript $script_dir/spreadvcf.R $wd
