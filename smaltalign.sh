@@ -14,7 +14,7 @@ if [ $# == 0 ]; then
 	echo '  -r       reference'
 	echo '  -n INT   number of reads (default 100,000)'
 	echo '  -c INT   minimal coverage (default 3)'
-	echo '  -i INT   iterations (default 2)'
+	echo '  -i INT   iterations (default 3)'
 	echo
 	exit
 fi
@@ -61,6 +61,7 @@ echo -e 'n_reads: ' $n_reads
 echo -e 'min_cov: ' $min_cov
 echo -e 'iterations: ' $iterations
 
+
 ### make list of files to analyse
 if [ -d $sample_dir ]; then list=$(ls $sample_dir | grep .fastq); else list=$sample_dir; fi
 
@@ -78,30 +79,40 @@ for i in $list; do
 		fi
 		
 	### de novo aligment
-	#velveth ${name} 29 -fastq ${name}_reads.fastq
-	#velvetg ${name}
-	#seqtk seq -A ${name}_reads.fastq > ${name}_reads.fasta
-	#cat ${name}_reads.fasta ${name}/contigs.fa ${name}/contigs.fa ${name}/contigs.fa > ${name}_reads_contigs.fasta
+	echo
+	echo sample $name de-novo alignment
+	echo "***********************************"
+	velveth ${name} 29 -fastq ${name}_reads.fastq
+	velvetg ${name} -min_contig_lgth 100
+	
+	### fake fastq of contigs and cat to reads in triplicate
+	awk '/^>/ {printf("\n%s\n",$0);next; } { printf("%s",$0);}  END {printf("\n");}' < ${name}/contigs.fa | awk 'BEGIN {RS = ">" ; FS = "\n"} NR > 1 {print "@"$1"\n"$2"\n+"$1"\n"gensub(/./, "I", "g", $2)}' > ${name}/contigs.fastq
+	cat ${name}_reads.fastq ${name}/contigs.fastq ${name}/contigs.fastq ${name}/contigs.fastq > ${name}_reads_contigs.fasta
 		
 	it=1
 	while [ "$it" -le "$iterations" ]; do		
 		echo
 		echo sample $name iteration $it
-		echo "***************************"
+		echo "***********************************"
+				
+		### align with smalt to reference, reads either ${name}_reads.fastq or ${name}_reads_contigs.fasta
+		smalt index -k 7 -s 2 ${name}_${it}_smalt_index $ref
+		if [ "$it" -eq 1 ]; then
+			smalt map -n 28 -x -y 0.5 -f samsoft -o ${name}_${it}.sam ${name}_${it}_smalt_index ${name}_reads_contigs.fasta
+		else
+			smalt map -n 28 -x -f samsoft -o ${name}_${it}.sam ${name}_${it}_smalt_index ${name}_reads.fastq
+		fi
 		
-		### align with smalt to reference
-		smalt index -k 7 -s 2 smalt_index $ref
-		smalt map -n 28 -x -f samsoft -o ${name}_${it}.sam smalt_index ${name}_reads.fastq #### ${name}_reads.fastq or ${name}_reads_contigs.fasta
 		samtools view -Su ${name}_${it}.sam | samtools sort - ${name}_${it}
 		samtools index ${name}_${it}.bam	
 
-		### create consensus wiht freebayes
+		### create consensus with freebayes
 		freebayes -f $ref -p 1 ${name}_${it}.bam > ${name}_${it}.vcf	
 		vcf2fasta -f $ref -p ${name}_${it}_ -P 1 ${name}_${it}.vcf
 		mv ${name}_${it}_unknown* ${name}_${it}_cons.fasta
 
 		### create vcf with lofreq
-		rm ${name}_${it}_lofreq.vcf
+		rm -f ${name}_${it}_lofreq.vcf
 		lofreq call -f $ref -o ${name}_${it}_lofreq.vcf ${name}_${it}.bam
 	
 		### calculate depth, run gap_cons.py
@@ -111,8 +122,9 @@ for i in $list; do
 		### remove temporary files of this iteration
 		rm ${name}_${it}.sam
 		rm ${name}_${it}.vcf
-		rm smalt_index.*
-		rm *.fasta.fai
+		rm ${name}_${it}.depth
+		rm ${name}_${it}_smalt_index.*
+		rm ${name}_*_cons.fasta.fai
 		
 		### new ref for next iteration
 		ref=${name}_${it}_cons.fasta
@@ -121,9 +133,6 @@ for i in $list; do
 	
 	### remove temporary files
 	rm ${name}_reads.fastq
-	
+	rm ${name}_reads_contigs.fasta
+	rm -rf ${name}
 done
-
-### Run spreadvcf.R
-#wd=$(pwd)
-#Rscript $script_dir/spreadvcf.R $wd

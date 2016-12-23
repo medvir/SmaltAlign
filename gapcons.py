@@ -89,11 +89,11 @@ def main():
         #file.close()
 		
 	### write complete coverage file into file
-    #with open(out_file_cov_list, 'w') as file:
-        #for item in cov_list:
-            #file.write("%s\n" % item)
-		#file.close()
-
+    with open(out_file_cov_list, 'w') as file:
+        for item in cov_list:
+            file.write("%s\n" % item)
+        file.close()
+	
 
 if __name__ == '__main__':
     main()
