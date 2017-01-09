@@ -1,6 +1,6 @@
 library(tidyverse)
 
-path = "/Volumes/huber.michael/HCV/experiments/161212/"
+path = "/Volumes/huber.michael/HCV/experiments/161229/"
 files = list.files(path, pattern = "3_cov.list")
 
 data = data.frame()

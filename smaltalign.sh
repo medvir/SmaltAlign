@@ -2,7 +2,7 @@
 
 ### defaults
 script_dir=$( dirname "$(readlink -f "$0")" )
-n_reads=100000
+n_reads=50000
 min_cov=3
 iterations=3
 
@@ -12,7 +12,7 @@ if [ $# == 0 ]; then
 	echo 'Usage: smaltalign.sh -r <reference_file> [options] <fastq_file/directory> '
 	echo 'Options:'
 	echo '  -r       reference'
-	echo '  -n INT   number of reads (default 100,000)'
+	echo '  -n INT   number of reads (default 50000)'
 	echo '  -c INT   minimal coverage (default 3)'
 	echo '  -i INT   iterations (default 3)'
 	echo
