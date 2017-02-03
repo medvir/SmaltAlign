@@ -44,7 +44,7 @@ def depth_to_complete_list(depth_file):
 
 def fasta_to_list(seq_file):
 
-    ### write ref_file file into a list (seq_list)
+    ### write ref_file into a list (seq_list)
     with open(seq_file, 'r') as file:
         seq = file.read().splitlines(True)[1:]
     seq = ''.join(seq)

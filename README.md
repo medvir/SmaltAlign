@@ -1,12 +1,8 @@
 # SmaltAlign
-Quick alignment of reads agains a given reference using smalt.
-
-## smaltalign.sh
-`smaltalign.sh` is Bash the script for HIV-1 env plasmid sequencing analysis.
-Input: Fastq file or directory containing fastq files
+Quick alignment of reads against a given reference using smalt. `smaltalign.sh` is the main script.
 
 ## Usage
-	usage: smaltalign.sh -r <reference_file> [options] <fastq_file/directory> 
+	smaltalign.sh -r <reference_file> [options] <fastq_file/directory> 
 	
 	OPTIONS
 	-r       reference

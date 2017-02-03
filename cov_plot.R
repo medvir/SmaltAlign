@@ -1,23 +1,35 @@
 library(tidyverse)
+library(stringr)
+library(cowplot)
 
-path = "/Volumes/huber.michael/HCV/experiments/161229/"
-files = list.files(path, pattern = "3_cov.list")
+path = "/Volumes/huber.michael/HCV/experiments/170202/"
+files = list.files(path, pattern = "cov.list")
 
 data = data.frame()
 for (i in files) {
         data_i = read.delim(paste0(path, i), header=FALSE)
-        data_i$V2 = seq.int(nrow(data_i))
-        data_i$V3 = sub("_3_cov.list", "", i)
+        data_i = data_i %>%
+                mutate(pos = 1:nrow(data_i)) %>%
+                mutate(file = str_sub(i, 1, -12)) %>%
+                mutate(iteration = str_sub(i, -10, -10)) %>%
+                rename(cov = V1)
         data = rbind(data, data_i)
 }
 
 plot = data %>%
-        ggplot(aes(x=V2, y=V1, color=V3)) +
+        ggplot(aes(x=pos, y=cov, color=iteration)) +
                 geom_line(size=.2) +
                 xlab('genome position') +
                 ylab('coverage (reads)') +
                 scale_y_log10() + 
-                facet_wrap(~ V3) +
-                theme(legend.position="none")
+                facet_wrap( ~ file) +
+                panel_border() +
+                background_grid(major = "xy") +
+                theme(axis.title = element_text(size = 7.5)) +
+                theme(axis.text  = element_text(size = 7.5)) +
+                theme(strip.text = element_text(size = 7.5)) +
+                theme(legend.title = element_text(size = 7.5)) +
+                theme(legend.text = element_text(size = 7.5)) +
+                theme(legend.position="bottom")
 print(plot)
 ggsave(filename=paste0(path, "coverage.pdf"), plot, width = 30/2.54, height = 21/2.54)
