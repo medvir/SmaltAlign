@@ -1,8 +1,10 @@
-library(tidyverse)
-
 path = "/Volumes/huber.michael/HCV/experiments/170202/"
-files = list.files(path, pattern = "3_lofreq.vcf")
 
+library(tidyverse)
+library(stringr)
+
+files = list.files(path, pattern = "lofreq.vcf")
+files = files[grep(paste0(max(str_sub(files, -12, -12)), "_lofreq.vcf"), files)]
 INFO_lofreq = c("DP", "AF", "SB", "DP4")
 
 for (i in files) {

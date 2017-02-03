@@ -11,13 +11,12 @@ G1a=("1000313262-HCV_S1_L001_R1_001.fastq.gz
 1000317535-HCV_S9_L001_R1_001.fastq.gz
 1000319329-HCV_S10_L001_R1_001.fastq.gz
 1000320219-HCV_S12_L001_R1_001.fastq.gz
-1000320509-HCV_S11_L001_R1_001.fastq.gz
-1000335439-SSIV-HCV_S14_L001_R1_001.fastq.gz
-1000335439-Takara-HCV_S13_L001_R1_001.fastq.gz")
+1000320509-HCV_S11_L001_R1_001.fastq.gz")
 
 G1b=("")
 
-G3a=("")
+G3a=("1000335439-SSIV-HCV_S14_L001_R1_001.fastq.gz
+1000335439-Takara-HCV_S13_L001_R1_001.fastq.gz")
 
 G4d=("")
 
@@ -50,3 +49,6 @@ done
 for s in $HIV2; do
 	${script_dir}/smaltalign.sh -r ${script_dir}/References/HIV-2A_ROD.fasta -n $n -c $c -i $i $s
 done
+
+#Rscript ${script_dir}/cov_plot.R
+#Rscript ${script_dir}/spreadvcf

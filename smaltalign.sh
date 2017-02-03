@@ -77,11 +77,14 @@ for i in $list; do
 		else
 			seqtk sample $i $n_reads > ${name}_reads.fastq
 		fi
-		
+	
+	n_sample=$(wc -l ${name}_reads.fastq | cut -f 1 -d " ")
+	n_sample=$(($n_sample / 4))
+	
 	### de novo aligment
 	echo
-	echo sample $name de-novo alignment
-	echo "***********************************"
+	echo sample $name, $n_sample reads, de-novo alignment 
+	echo "************************************************************"
 	velveth ${name} 29 -fastq ${name}_reads.fastq
 	velvetg ${name} -min_contig_lgth 100
 	
@@ -92,8 +95,8 @@ for i in $list; do
 	it=1
 	while [ "$it" -le "$iterations" ]; do		
 		echo
-		echo sample $name iteration $it
-		echo "***********************************"
+		echo sample $name, $n_sample reads, iteration $it
+		echo "************************************************************"
 				
 		### align with smalt to reference, reads either ${name}_reads.fastq or ${name}_reads_contigs.fasta
 		smalt index -k 7 -s 2 ${name}_${it}_smalt_index $ref

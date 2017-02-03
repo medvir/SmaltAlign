@@ -1,11 +1,12 @@
+path = "/Volumes/huber.michael/HCV/experiments/170202/"
+
 library(tidyverse)
 library(stringr)
 library(cowplot)
 
-path = "/Volumes/huber.michael/HCV/experiments/170202/"
 files = list.files(path, pattern = "cov.list")
-
 data = data.frame()
+
 for (i in files) {
         data_i = read.delim(paste0(path, i), header=FALSE)
         data_i = data_i %>%
@@ -32,4 +33,5 @@ plot = data %>%
                 theme(legend.text = element_text(size = 7.5)) +
                 theme(legend.position="bottom")
 print(plot)
+
 ggsave(filename=paste0(path, "coverage.pdf"), plot, width = 30/2.54, height = 21/2.54)
