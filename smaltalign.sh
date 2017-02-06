@@ -4,8 +4,8 @@
 script_dir=$( dirname "$(readlink -f "$0")" )
 n_reads=50000
 min_cov=3
-iterations=3
-readlength=150 ### can be used to trim reads
+iterations=4
+#readlength=150 ### can be used to trim reads
 
 ### arguments
 if [ $# == 0 ]; then
@@ -15,7 +15,7 @@ if [ $# == 0 ]; then
 	echo '  -r       reference'
 	echo '  -n INT   number of reads (default 50000)'
 	echo '  -c INT   minimal coverage (default 3)'
-	echo '  -i INT   iterations (default 3)'
+	echo '  -i INT   iterations (default 4)'
 	echo
 	exit
 fi
@@ -74,9 +74,11 @@ for i in $list; do
 	### unzip fastq file if necessary, sample reads with seqtk
 	if [[ $i =~ \.gz$ ]]
 		then
-			gunzip -c $i | seqtk sample - $n_reads | /usr/local/seqtk/seqtk trimfq -L $readlength - > ${name}_reads.fastq
+			gunzip -c $i | seqtk sample - $n_reads > ${name}_reads.fastq
+			#gunzip -c $i | seqtk sample - $n_reads | /usr/local/seqtk/seqtk trimfq -L $readlength - > ${name}_reads.fastq
 		else
-			seqtk sample $i $n_reads | /usr/local/seqtk/seqtk trimfq -L $readlength - > ${name}_reads.fastq
+			seqtk sample $i $n_reads > ${name}_reads.fastq
+			#seqtk sample $i $n_reads | /usr/local/seqtk/seqtk trimfq -L $readlength - > ${name}_reads.fastq
 		fi
 		
 	n_sample=$(wc -l ${name}_reads.fastq | cut -f 1 -d " ")
@@ -136,7 +138,7 @@ for i in $list; do
 	done
 	
 	### remove temporary files
-	#rm ${name}_reads.fastq
+	rm ${name}_reads.fastq
 	rm ${name}_reads_contigs.fasta
 	rm -rf ${name}
 done

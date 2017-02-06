@@ -1,4 +1,4 @@
-path = "/Volumes/huber.michael/HCV/experiments/170202_100/"
+path = "/Volumes/huber.michael/HCV/experiments/170202/"
 
 library(tidyverse)
 library(stringr)
@@ -22,7 +22,7 @@ plot = data %>%
                 geom_line(size=.2) +
                 xlab('genome position') +
                 ylab('coverage (reads)') +
-                scale_y_log10(breaks = c(1,10,100,1000,10000)) +
+                scale_y_log10(breaks = c(1,10,100,1000,10000,100000)) +
                 facet_wrap( ~ file) +
                 panel_border() +
                 background_grid(major = "xy") +

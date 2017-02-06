@@ -23,10 +23,10 @@ G4d=("")
 HIV2=("1000326309-HIV2_S15_L001_R1_001.fastq.gz
 pos-control-HIV2_S16_L001_R1_001.fastq.gz")
 
-
 n=50000 # number of reads (default 50000)
-c=3     # minimal coverage (default 3)
-i=3     # iterations (default 3)
+c=10     # minimal coverage (default 3)
+i=4     # iterations (default 3)
+
 
 script_dir=$( dirname "$(readlink -f "$0")" )
 
