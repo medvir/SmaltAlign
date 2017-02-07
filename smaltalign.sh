@@ -75,10 +75,10 @@ for i in $list; do
 	if [[ $i =~ \.gz$ ]]
 		then
 			gunzip -c $i | seqtk sample - $n_reads > ${name}_reads.fastq
-			#gunzip -c $i | seqtk sample - $n_reads | /usr/local/seqtk/seqtk trimfq -L $readlength - > ${name}_reads.fastq
+			#gunzip -c $i | seqtk sample - $n_reads | seqtk trimfq -L $readlength - > ${name}_reads.fastq
 		else
 			seqtk sample $i $n_reads > ${name}_reads.fastq
-			#seqtk sample $i $n_reads | /usr/local/seqtk/seqtk trimfq -L $readlength - > ${name}_reads.fastq
+			#seqtk sample $i $n_reads | seqtk trimfq -L $readlength - > ${name}_reads.fastq
 		fi
 		
 	n_sample=$(wc -l ${name}_reads.fastq | cut -f 1 -d " ")

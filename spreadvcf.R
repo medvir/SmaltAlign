@@ -1,5 +1,5 @@
 path = "/Volumes/huber.michael/HCV/experiments/170202/"
-threshold = 0.05
+threshold = 0.15
 
 library(tidyverse)
 library(stringr)
@@ -53,7 +53,7 @@ for (i in files) {
                 mutate(REF = as.character(REF)) %>%
                 mutate(cons = as.character(cons))
         
-        if (!(all(comb_data$cons == comb_data$REF, na.rm = TRUE))) {next} ### Exit loop if alignment not correct
+        if (!(all(comb_data$cons == comb_data$REF, na.rm = TRUE))) {next} ### Exit loop for this sample if alignment not correct
         
         comb_data = comb_data %>%
                 rename(SEQ = cons) %>%
@@ -72,7 +72,7 @@ for (i in files) {
                 }
         }
         
-        write.csv(comb_data, paste0(path, name_i, ".csv"))
+        write.csv(comb_data, paste0(path, name_i,  "_", threshold, ".csv"))
         tr_w_seq = paste(comb_data$WTS, collapse = "")
-        write.fasta(tr_w_seq, name_i, paste0(path, name_i, "_tr_w_seq.fasta"), open = "w", nbchar = 60)
+        write.fasta(tr_w_seq, name_i, paste0(path, name_i, "_", threshold, "_wobble.fasta"), open = "w", nbchar = 60)
 }
