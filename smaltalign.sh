@@ -123,12 +123,12 @@ for i in $list; do
 	
 		### calculate depth, run gap_cons.py
 		samtools depth ${name}_${it}.bam > ${name}_${it}.depth
-		$script_dir/gapcons.py ${name}_${it}_cons.fasta ${name}_${it}.depth $min_cov
+		#$script_dir/gapcons.py ${name}_${it}_cons.fasta ${name}_${it}.depth $min_cov
 	
 		### remove temporary files of this iteration
+		#rm ${name}_${it}.depth
 		rm ${name}_${it}.sam
 		rm ${name}_${it}.vcf
-		rm ${name}_${it}.depth
 		rm ${name}_${it}_smalt_index.*
 		rm ${name}_*_cons.fasta.fai
 		

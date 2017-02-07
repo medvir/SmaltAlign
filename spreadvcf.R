@@ -1,12 +1,13 @@
 path = "/Volumes/huber.michael/HCV/experiments/170202/"
-threshold = 0.15
+threshold = 15 # minority variant threshold (%)
+coverage = 3 # minimal coverage required (reads)
 
 library(tidyverse)
 library(stringr)
 library(seqinr)
 
 files = list.files(path, pattern = "lofreq.vcf")
-files = files[grep(paste0(max(str_sub(files, -12, -12)), "_lofreq.vcf"), files)]
+files = files[grep(paste0(max(str_sub(files, -12, -12)), "_lofreq.vcf"), files)] # grep the lofreq files with the highest iteration
 INFO_lofreq = c("DP", "AF", "SB", "DP4")
 
 wobble <- function(l) {  ### input is a list of nucleotides
@@ -39,7 +40,7 @@ for (i in files) {
                 separate (INFO, INFO_lofreq, sep = ";", extra = "drop") %>%
                 select(POS, REF, ALT, DP, AF) %>%
                 mutate(DP = gsub("DP=" ,"", DP)) %>%
-                mutate(AF = round(as.numeric(gsub("AF=" ,"", AF)),2)) %>%
+                mutate(AF = round(as.numeric(gsub("AF=" ,"", AF))*100,0)) %>%
                 filter(AF >= threshold)
     
         seq_data = data.frame(cons = unlist(strsplit(readLines(cons_file)[2], ""))) %>%
@@ -61,7 +62,8 @@ for (i in files) {
                 mutate(AF = ifelse(is.na(AF), 0, AF)) %>%
                 mutate(ALT = as.character(ALT)) %>%
                 mutate(ALT = ifelse(is.na(ALT), SEQ, ALT)) %>%
-                mutate(WTS = apply(.[,c('SEQ', 'ALT')], 1, function(x) wobble(c(x['SEQ'], x['ALT']))))
+                mutate(WTS = apply(.[,c('SEQ', 'ALT')], 1, function(x) wobble(c(x['SEQ'], x['ALT'])))) #%>%
+                #mutate(WTS = apply(.[,c('COV')], 1, function(x) ifelse(COV <= threshold, "-", WTS)))
 
         for (j in nrow(comb_data):2) {
                 if (comb_data$POS[j] == comb_data$POS[j-1]) {
