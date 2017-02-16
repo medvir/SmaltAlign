@@ -1,8 +1,9 @@
 ### path to working directory
-path = "/Volumes/huber.michael/HCV/experiments/170202/"
+#path = commandArgs[1]
+path = "/Volumes/huber.michael/Diagnostics/experiments/170215/"
 
 ### minority variant threshold (%)
-variant_threshold = 10 
+variant_threshold = 15 
 
 ### minimal coverage required (reads)
 minimal_coverage = 3 
@@ -47,10 +48,8 @@ for (i in files) {
                 separate (INFO, c("DP", "AF", "SB", "DP4"), sep = ";", extra = "drop") %>%
                 select(POS, REF, ALT, DP, AF) %>%
                 mutate(DP = gsub("DP=" ,"", DP)) %>%
-                mutate(AF = round(as.numeric(gsub("AF=" ,"", AF))*100,0)) %>%
-                
-                ### filter for AF >= variant_threshold
-                filter(AF >= variant_threshold) 
+                mutate(AF = round(as.numeric(gsub("AF=" ,"", AF))*100,1)) %>%
+                filter(AF >= variant_threshold) ### filter for AF >= variant_threshold
     
         cons_data = data.frame(CONS = unlist(strsplit(readLines(cons_file)[-1], ""))) %>%
                 mutate(POS = seq.int(nrow(.)))
@@ -86,7 +85,7 @@ for (i in files) {
         
         ### apply minimal coverage threshold
         comb_data = comb_data %>%
-            mutate(WTS = ifelse(is.na(COV), "-", ifelse(COV < minimal_coverage, "N", WTS)))
+                mutate(WTS = ifelse(is.na(COV), "-", ifelse(COV < minimal_coverage, "N", WTS)))
         
         ### write output files
         write.csv(comb_data, paste0(path, name_i,  "_", variant_threshold, ".csv"))

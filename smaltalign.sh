@@ -3,7 +3,6 @@
 ### defaults
 script_dir=$( dirname "$(readlink -f "$0")" )
 n_reads=50000
-min_cov=3
 iterations=4
 #readlength=150 ### can be used to trim reads
 
@@ -14,7 +13,6 @@ if [ $# == 0 ]; then
 	echo 'Options:'
 	echo '  -r       reference'
 	echo '  -n INT   number of reads (default 50000)'
-	echo '  -c INT   minimal coverage (default 3)'
 	echo '  -i INT   iterations (default 4)'
 	echo
 	exit
@@ -25,10 +23,6 @@ while [[ $# -gt 1 ]]; do
 	case $key in
 		-r)
 		ref="$2"
-		shift # past argument
-		;;
-		-c)
-		min_cov="$2"
 		shift # past argument
 		;;
 		-n)
@@ -59,7 +53,6 @@ echo -e 'sample_dir: ' $sample_dir
 echo -e 'script_dir: ' $script_dir
 echo -e 'ref: ' $ref
 echo -e 'n_reads: ' $n_reads
-echo -e 'min_cov: ' $min_cov
 echo -e 'iterations: ' $iterations
 
 
@@ -121,12 +114,10 @@ for i in $list; do
 		rm -f ${name}_${it}_lofreq.vcf
 		lofreq call -f $ref -o ${name}_${it}_lofreq.vcf ${name}_${it}.bam
 	
-		### calculate depth, run gap_cons.py
+		### calculate depth
 		samtools depth ${name}_${it}.bam > ${name}_${it}.depth
-		#$script_dir/gapcons.py ${name}_${it}_cons.fasta ${name}_${it}.depth $min_cov
 	
 		### remove temporary files of this iteration
-		#rm ${name}_${it}.depth
 		rm ${name}_${it}.sam
 		rm ${name}_${it}.vcf
 		rm ${name}_${it}_smalt_index.*

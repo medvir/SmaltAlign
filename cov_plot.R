@@ -1,19 +1,22 @@
-path = "/Volumes/huber.michael/HCV/experiments/170202/"
+### cov_plot.R
 
 library(tidyverse)
 library(stringr)
 library(cowplot)
 
-files = list.files(path, pattern = "cov.list")
+#path = commandArgs[1]
+path = "/Volumes/huber.michael/Diagnostics/experiments/170215/"
+
+files = list.files(path, pattern = "depth")
 data = data.frame()
 
 for (i in files) {
-        data_i = read.delim(paste0(path, i), header=FALSE)
-        data_i = data_i %>%
-                mutate(pos = 1:nrow(data_i)) %>%
-                mutate(file = str_sub(i, 1, -12)) %>%
-                mutate(iteration = str_sub(i, -10, -10)) %>%
-                rename(cov = V1)
+        depth_i = read_delim(paste0(path, i), "\t", col_names = FALSE, trim_ws = TRUE) %>% select(X3) %>% unlist()
+        names(depth_i) = read_delim(paste0(path, i), "\t", col_names = FALSE, trim_ws = TRUE) %>% select(X2) %>% unlist()
+        data_i = data.frame(pos = 1:max(as.numeric(names(depth_i)))) %>%
+                mutate(cov = ifelse(is.na(depth_i[as.character(pos)]), 0, depth_i[as.character(pos)])) %>%
+                mutate(file = str_sub(i, 1, -9)) %>%
+                mutate(iteration = str_sub(i, -7, -7))
         data = rbind(data, data_i)
 }
 
@@ -33,5 +36,4 @@ plot = data %>%
                 theme(legend.text = element_text(size = 7.5)) +
                 theme(legend.position="bottom")
 print(plot)
-
 ggsave(filename=paste0(path, "coverage.pdf"), plot, width = 30/2.54, height = 21/2.54)
