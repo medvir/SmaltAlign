@@ -19,8 +19,8 @@ files = files[grep(paste0(max(str_sub(files, -12, -12)), "_lofreq.vcf"), files)]
 ### functions
 call_wobbles <- function(nuc_list) {  ### input is a list of nucleotides, all other characters are ignored
         nuc_list = toupper(nuc_list) %>% .[is.element(., c("A", "G", "C", "T", "N"))] %>% unique() 
-        if (length(nuc_list) == 0) {return(NA)}  ### returns NA if onyl other characters than nucleotides
-        if ("N" %in% nuc_list | length(nuc_list) == 4) {return("N")}
+        if (length(nuc_list) == 0) {return(NA)} ### returns NA if only other characters than nucleotides
+        if ("N" %in% nuc_list | length(nuc_list) == 4) {return("N")} ### returns N if N or all four nucleotides included
         if (length(nuc_list) == 1) {return(nuc_list[1])}
         if (length(nuc_list) == 2) {
                 IUPAC = data.frame(c("A", "R", "M", "W"), c("R", "G", "S", "K"), c("M", "S", "C", "Y"), c("W", "K", "Y", "T"))
@@ -28,7 +28,7 @@ call_wobbles <- function(nuc_list) {  ### input is a list of nucleotides, all ot
                 row.names(IUPAC) = c("A", "G", "C", "T")
                 return(as.character(IUPAC[nuc_list[1], nuc_list[2]]))
         }
-        if (length(nuc_list) == 3) {
+        if (length(nuc_list) == 3) { 
                 if (!("A" %in% nuc_list)) {return("B")}
                 if (!("C" %in% nuc_list)) {return("D")}
                 if (!("G" %in% nuc_list)) {return("H")}
@@ -54,7 +54,7 @@ for (i in files) {
         cons_data = data.frame(CONS = unlist(strsplit(readLines(cons_file)[-1], ""))) %>%
                 mutate(POS = seq.int(nrow(.)))
             
-        cov_data = read_delim(depth_file, "\t", col_names = FALSE, trim_ws = TRUE) %>%
+        cov_data = read_delim(depth_file, "\t", col_names = FALSE, trim_ws = TRUE, col_types = "cii") %>%
                 rename(POS = X2, COV = X3) %>%
                 select(POS, COV)
         

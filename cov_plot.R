@@ -5,13 +5,13 @@ library(stringr)
 library(cowplot)
 
 #path = commandArgs[1]
-path = "/Volumes/huber.michael/Diagnostics/experiments/170215/"
+path = "/Volumes/huber.michael/Diagnostics/experiments/170222_HCV_PCR/"
 
 files = list.files(path, pattern = "depth")
 data = data.frame()
 
 for (i in files) {
-        depth_i = read_delim(paste0(path, i), "\t", col_names = FALSE, trim_ws = TRUE) %>% select(X3) %>% unlist()
+        depth_i = read_delim(paste0(path, i), "\t", col_names = FALSE, trim_ws = TRUE, col_types = "cii") %>% select(X3) %>% unlist()
         names(depth_i) = read_delim(paste0(path, i), "\t", col_names = FALSE, trim_ws = TRUE) %>% select(X2) %>% unlist()
         data_i = data.frame(pos = 1:max(as.numeric(names(depth_i)))) %>%
                 mutate(cov = ifelse(is.na(depth_i[as.character(pos)]), 0, depth_i[as.character(pos)])) %>%
@@ -21,6 +21,7 @@ for (i in files) {
 }
 
 plot = data %>%
+        #filter(pos <= 1000) %>%
         ggplot(aes(x=pos, y=cov, color=iteration)) +
                 geom_line(size=.2) +
                 xlab('genome position') +
