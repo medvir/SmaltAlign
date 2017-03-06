@@ -1,9 +1,9 @@
 ### path to working directory
 #path = commandArgs[1]
-path = "/Volumes/huber.michael/Diagnostics/experiments/170215/"
+path = "/Volumes/huber.michael/Diagnostics/experiments/170228/"
 
 ### minority variant threshold (%)
-variant_threshold = 15 
+variant_threshold = 5
 
 ### minimal coverage required (reads)
 minimal_coverage = 3 
@@ -43,7 +43,8 @@ for (i in files) {
         cons_file = paste0(path, name_i, "_cons.fasta")
         depth_file = paste0(path, name_i, ".depth")
         
-        vcf_data = read.table(vcf_file, quote="\"") %>%
+        if (class(try(read.table(vcf_file))) == "try-error") {next} ### next if vcf file is empty
+        vcf_data = try(read.table(vcf_file, quote="\"")) %>%
                 rename(CHROM = V1, POS = V2, ID = V3, REF = V4, ALT = V5, QUAL = V6, FILTER = V7, INFO = V8) %>%
                 separate (INFO, c("DP", "AF", "SB", "DP4"), sep = ";", extra = "drop") %>%
                 select(POS, REF, ALT, DP, AF) %>%
@@ -60,9 +61,10 @@ for (i in files) {
         
         comb_data = full_join(cons_data, vcf_data, "POS") %>%
                 full_join(cov_data, "POS") %>%
-                mutate(REF = as.character(REF)) %>%
-                mutate(ALT = as.character(ALT)) %>%
-                mutate(CONS = as.character(CONS))
+                #filter(POS <= 1000) %>% ### filter for positions
+                mutate(REF = toupper(as.character(REF))) %>%
+                mutate(ALT = toupper(as.character(ALT))) %>%
+                mutate(CONS = toupper(as.character(CONS)))
         
         ### exit loop for this sample if alignment not correct
         if (!(all(comb_data$CONS == comb_data$REF, na.rm = TRUE))) {next} 

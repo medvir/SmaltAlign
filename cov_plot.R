@@ -5,12 +5,13 @@ library(stringr)
 library(cowplot)
 
 #path = commandArgs[1]
-path = "/Volumes/huber.michael/Diagnostics/experiments/170222_HCV_PCR/"
+path = "/Volumes/huber.michael/Diagnostics/experiments/170228/"
 
 files = list.files(path, pattern = "depth")
 data = data.frame()
 
 for (i in files) {
+        if (file.info(paste0(path, i))$size == 0) {next} ### next if depth file is empty
         depth_i = read_delim(paste0(path, i), "\t", col_names = FALSE, trim_ws = TRUE, col_types = "cii") %>% select(X3) %>% unlist()
         names(depth_i) = read_delim(paste0(path, i), "\t", col_names = FALSE, trim_ws = TRUE) %>% select(X2) %>% unlist()
         data_i = data.frame(pos = 1:max(as.numeric(names(depth_i)))) %>%

@@ -1,9 +1,6 @@
 #!/bin/bash
-	
-n=5000 # number of reads (default 50000)
-i=4     # iterations (default 4)
 
-G1a=("1000331007_S2_L001_R1_001.fastq.gz
+HCV-a=("1000331007_S2_L001_R1_001.fastq.gz
 1000333464_S1_L001_R1_001.fastq.gz
 1000335027_S3_L001_R1_001.fastq.gz
 1000335296_S4_L001_R1_001.fastq.gz
@@ -20,17 +17,15 @@ G1a=("1000331007_S2_L001_R1_001.fastq.gz
 1000342005_S14_L001_R1_001.fastq.gz
 1000342493_S15_L001_R1_001.fastq.gz")
 
-G1l=("")
+HCV-1b=("")
 
-G1b=("")
+HCV-1l=("")
 
-G3a=("")
+HCV-3a=("")
 
-G4d=("")
+HCV-4d=("")
 
-HIV2=("")
-
-HIV1=("1000342682_S18_L001_R1_001.fastq.gz
+HIV-1=("1000342682_S18_L001_R1_001.fastq.gz
 1000342899_S19_L001_R1_001.fastq.gz
 1000343094_S20_L001_R1_001.fastq.gz
 1000343104_S21_L001_R1_001.fastq.gz
@@ -40,37 +35,48 @@ HIV1=("1000342682_S18_L001_R1_001.fastq.gz
 1000343615_S25_L001_R1_001.fastq.gz
 1000343652_S17_L001_R1_001.fastq.gz")
 
+HIV-2=("")
 
 
+n=50000 # number of reads (default 50000)
+i=4     # iterations (default 4)
 script_dir=$( dirname "$(readlink -f "$0")" )
 
-for s in $G1a; do
-	${script_dir}/smaltalign.sh -r ${script_dir}/References/HCV_1.fasta -n $n -i $i $s
+
+for s in $HCV-1a; do
+	${script_dir}/smaltalign.sh -r ${script_dir}/References/HCV-1a.fasta -n $n -i $i $s
 done
 
-for s in $G1b; do
-	${script_dir}/smaltalign.sh -r ${script_dir}/References/HCV_1b_M1LE.fasta -n $n -i $i $s
+
+for s in $HCV-1b; do
+	${script_dir}/smaltalign.sh -r ${script_dir}/References/HCV-1b.fasta -n $n -i $i $s
 done
 
-for s in $G1l; do
-	${script_dir}/smaltalign.sh -r ${script_dir}/References/HCV_1l_KC248196.fasta -n $n -i $i $s
+
+for s in $HCV-1l; do
+	${script_dir}/smaltalign.sh -r ${script_dir}/References/HCV-1l.fasta -n $n -i $i $s
 done
 
-for s in $G3a; do
-	${script_dir}/smaltalign.sh -r ${script_dir}/References/HCV_3a_CB.fasta -n $n -i $i $s
+
+for s in $HCV-3a; do
+	${script_dir}/smaltalign.sh -r ${script_dir}/References/HCV-3a.fasta -n $n -i $i $s
 done
 
-for s in $G4d; do
-	${script_dir}/smaltalign.sh -r ${script_dir}/References/HCV_4d.fasta -n $n -i $i $s
+
+for s in $HCV-4d; do
+	${script_dir}/smaltalign.sh -r ${script_dir}/References/HCV-4d.fasta -n $n -i $i $s
 done
 
-for s in $HIV1; do
-	${script_dir}/smaltalign.sh -r ${script_dir}/References/HXB2.fasta -n $n -i $i $s
+
+for s in $HIV-1; do
+	${script_dir}/smaltalign.sh -r ${script_dir}/References/HIV-1.fasta -n $n -i $i $s
 done
 
-for s in $HIV2; do
-	${script_dir}/smaltalign.sh -r ${script_dir}/References/HIV-2A_ROD.fasta -n $n -i $i $s
+
+for s in $HIV-2; do
+	${script_dir}/smaltalign.sh -r ${script_dir}/References/HIV-2.fasta -n $n -i $i $s
 done
+
 
 #Rscript ${script_dir}/cov_plot.R ./
 #Rscript ${script_dir}/wts.R ./

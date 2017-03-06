@@ -55,7 +55,6 @@ echo -e 'ref: ' $ref
 echo -e 'n_reads: ' $n_reads
 echo -e 'iterations: ' $iterations
 
-
 ### make list of files to analyse
 if [ -d $sample_dir ]; then list=$(ls $sample_dir | grep .fastq); else list=$sample_dir; fi
 
