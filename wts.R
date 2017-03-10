@@ -1,6 +1,6 @@
 ### path to working directory
 #path = commandArgs[1]
-path = "/Volumes/huber.michael/Diagnostics/experiments/170228/"
+path = "/Volumes/huber.michael/Diagnostics/experiments/170309_HCV/"
 
 ### minority variant threshold (%)
 variant_threshold = 5
@@ -17,24 +17,31 @@ files = list.files(path, pattern = "lofreq.vcf")
 files = files[grep(paste0(max(str_sub(files, -12, -12)), "_lofreq.vcf"), files)] ### grep the N_lofreq.vcf files with the highest iteration
 
 ### functions
-call_wobbles <- function(nuc_list) {  ### input is a list of nucleotides, all other characters are ignored
-        nuc_list = toupper(nuc_list) %>% .[is.element(., c("A", "G", "C", "T", "N"))] %>% unique() 
-        if (length(nuc_list) == 0) {return(NA)} ### returns NA if only other characters than nucleotides
-        if ("N" %in% nuc_list | length(nuc_list) == 4) {return("N")} ### returns N if N or all four nucleotides included
-        if (length(nuc_list) == 1) {return(nuc_list[1])}
-        if (length(nuc_list) == 2) {
+call_wobbles <- function(nuc_list) {
+        ### function to call ambiguous nucleotides (wobbles)
+        ### input is a list of nucleotides (nuc_list, length may be greater than 2)
+        nuc_list = toupper(nuc_list) %>% unique() %>% .[!is.na(.)]  ### NAs in nuc_list are ignored (e.g. if position not covered, returns NA)
+        if (length(nuc_list) == 0) {return(NA)}
+        for (i in 1:length(nuc_list)) {
+                if (nchar(nuc_list[i]) > 1) {return("insertion")}   ### returns "insertion" if nuc_list not composed of single characters
+                if (!(is.element(nuc_list[i], c("A", "G", "C", "T", "N")))) {return("unkown_nucleotide")}   ### returns "unkown_nucleotide" if characters other than A, G, C, T, N in nuc_list
+                }
+        if ("N" %in% nuc_list | length(nuc_list) == 4) {return("N")}  ### returns "N" if at least one N or all four nucleotides included in nuc_list
+        if (length(nuc_list) == 1) {return(nuc_list[1])}  ### one single nucleotide
+        if (length(nuc_list) == 2) {  ### two different nucleotides
                 IUPAC = data.frame(c("A", "R", "M", "W"), c("R", "G", "S", "K"), c("M", "S", "C", "Y"), c("W", "K", "Y", "T"))
                 names(IUPAC) = c("A", "G", "C", "T")
                 row.names(IUPAC) = c("A", "G", "C", "T")
                 return(as.character(IUPAC[nuc_list[1], nuc_list[2]]))
         }
-        if (length(nuc_list) == 3) { 
+        if (length(nuc_list) == 3) {  ### three different nucleotides
                 if (!("A" %in% nuc_list)) {return("B")}
                 if (!("C" %in% nuc_list)) {return("D")}
                 if (!("G" %in% nuc_list)) {return("H")}
                 if (!("T" %in% nuc_list)) {return("V")}
+                }
         }
-}
+
 
 ### Loop over all files
 for (i in files) {
