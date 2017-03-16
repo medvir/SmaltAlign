@@ -79,7 +79,7 @@ for i in $list; do
 	### de novo aligment
 	echo
 	echo sample $name, $n_sample reads, de-novo alignment 
-	echo "************************************************************"
+	echo "*******************************************************************************"
 	velveth ${name} 29 -fastq ${name}_reads.fastq
 	velvetg ${name} -min_contig_lgth 100
 	
@@ -91,26 +91,37 @@ for i in $list; do
 	while [ "$it" -le "$iterations" ]; do		
 		echo
 		echo sample $name, $n_sample reads, iteration $it
-		echo "************************************************************"
+		if [ -s $ref ]; then
+			echo reference $ref
+			echo "*******************************************************************************"
+		else
+			echo ERROR: No reference
+			exit
+		fi
 				
 		### align with smalt to reference, reads either ${name}_reads.fastq or ${name}_reads_contigs.fasta
 		smalt index -k 7 -s 2 ${name}_${it}_smalt_index $ref
 		if [ "$it" -eq 1 ]; then
 			smalt map -n 28 -x -y 0.5 -f samsoft -o ${name}_${it}.sam ${name}_${it}_smalt_index ${name}_reads_contigs.fasta
 		else
-			smalt map -n 28 -x -f samsoft -o ${name}_${it}.sam ${name}_${it}_smalt_index ${name}_reads.fastq
+			smalt map -n 28 -x -y 0.5 -f samsoft -o ${name}_${it}.sam ${name}_${it}_smalt_index ${name}_reads.fastq
 		fi
 		
 		samtools view -Su ${name}_${it}.sam | samtools sort - ${name}_${it}
 		samtools index ${name}_${it}.bam	
 
 		### create consensus with freebayes
-		freebayes -f $ref -p 1 ${name}_${it}.bam > ${name}_${it}.vcf	
+		freebayes -f $ref -p 1 ${name}_${it}.bam > ${name}_${it}.vcf
+		lines=$(sed '/^#/ d' < ${name}_${it}.vcf | wc -l)
+		if [ "$lines" -eq "0" ]; then
+			echo WARNING: vcf file empty
+		fi
 		vcf2fasta -f $ref -p ${name}_${it}_ -P 1 ${name}_${it}.vcf
+		rm ${name}_${it}_cons.fasta
 		mv ${name}_${it}_unknown* ${name}_${it}_cons.fasta
 
 		### create vcf with lofreq
-		rm -f ${name}_${it}_lofreq.vcf
+		rm ${name}_${it}_lofreq.vcf
 		lofreq call -f $ref -o ${name}_${it}_lofreq.vcf ${name}_${it}.bam
 	
 		### calculate depth
@@ -118,7 +129,7 @@ for i in $list; do
 	
 		### remove temporary files of this iteration
 		rm ${name}_${it}.sam
-		rm ${name}_${it}.vcf
+		#rm ${name}_${it}.vcf
 		rm ${name}_${it}_smalt_index.*
 		rm ${name}_*_cons.fasta.fai
 		

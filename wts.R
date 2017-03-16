@@ -1,14 +1,15 @@
-### path to working directory
+### wts.R
+
 #path = commandArgs[1]
-path = "/Volumes/huber.michael/Diagnostics/experiments/170309_HCV/"
+path = "/Volumes/huber.michael/Diagnostics/experiments/170315/"
 
 ### minority variant threshold (%)
-variant_threshold = 5
+variant_threshold = 15
 
 ### minimal coverage required (reads)
 minimal_coverage = 3 
 
-### libraries
+
 library(tidyverse)
 library(stringr)
 library(seqinr)

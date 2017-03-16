@@ -1,11 +1,12 @@
 ### cov_plot.R
 
+#path = commandArgs[1]
+path = "/Volumes/huber.michael/Diagnostics/experiments/170315/"
+
+
 library(tidyverse)
 library(stringr)
 library(cowplot)
-
-#path = commandArgs[1]
-path = "/Volumes/huber.michael/Diagnostics/experiments/170309_HCV/"
 
 files = list.files(path, pattern = "depth")
 data = data.frame()
