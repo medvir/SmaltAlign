@@ -2,9 +2,8 @@
 
 ### defaults
 script_dir=$( dirname "$(readlink -f "$0")" )
-n_reads=50000
+n_reads=200000
 iterations=4
-#readlength=150 ### can be used to trim reads
 
 ### arguments
 if [ $# == 0 ]; then
@@ -12,7 +11,7 @@ if [ $# == 0 ]; then
 	echo 'Usage: smaltalign.sh -r <reference_file> [options] <fastq_file/directory> '
 	echo 'Options:'
 	echo '  -r       reference'
-	echo '  -n INT   number of reads (default 50000)'
+	echo '  -n INT   number of reads (default 200000)'
 	echo '  -i INT   iterations (default 4)'
 	echo
 	exit
@@ -44,6 +43,7 @@ if [[ -n $1 ]]; then
     sample_dir=$1
 fi
 
+
 ### convert relative to absolute path
 ref=$( readlink -f $ref )
 sample_dir=$( readlink -f $sample_dir )
@@ -55,24 +55,15 @@ echo -e 'ref: ' $ref
 echo -e 'n_reads: ' $n_reads
 echo -e 'iterations: ' $iterations
 
-### make list of files to analyse
-if [ -d $sample_dir ]; then list=$(ls $sample_dir | grep .fastq); else list=$sample_dir; fi
 
-### loop over list	
+### loop over list of files to analyse
+if [ -d $sample_dir ]; then list=$(ls $sample_dir | grep .fastq); else list=$sample_dir; fi
 for i in $list; do
 	
 	name=$(basename $i | sed 's/_L001_R.*//' | sed 's/.fastq.gz//'| sed 's/.fastq//')
 	
-	### unzip fastq file if necessary, sample reads with seqtk
-	if [[ $i =~ \.gz$ ]]
-		then
-			gunzip -c $i | seqtk sample - $n_reads > ${name}_reads.fastq
-			#gunzip -c $i | seqtk sample - $n_reads | seqtk trimfq -L $readlength - > ${name}_reads.fastq
-		else
-			seqtk sample $i $n_reads > ${name}_reads.fastq
-			#seqtk sample $i $n_reads | seqtk trimfq -L $readlength - > ${name}_reads.fastq
-		fi
-		
+	### sample reads with seqtk
+	seqtk sample $i $n_reads > ${name}_reads.fastq
 	n_sample=$(wc -l ${name}_reads.fastq | cut -f 1 -d " ")
 	n_sample=$(($n_sample / 4))
 	
@@ -101,6 +92,8 @@ for i in $list; do
 				
 		### align with smalt to reference, reads either ${name}_reads.fastq or ${name}_reads_contigs.fasta
 		smalt index -k 7 -s 2 ${name}_${it}_smalt_index $ref
+		samtools faidx $ref
+		
 		if [ "$it" -eq 1 ]; then
 			smalt map -n 28 -x -y 0.5 -f samsoft -o ${name}_${it}.sam ${name}_${it}_smalt_index ${name}_reads_contigs.fasta
 		else
@@ -112,26 +105,27 @@ for i in $list; do
 
 		### create consensus with freebayes
 		freebayes -f $ref -p 1 ${name}_${it}.bam > ${name}_${it}.vcf
-		lines=$(sed '/^#/ d' < ${name}_${it}.vcf | wc -l)
-		if [ "$lines" -eq "0" ]; then
+		muts=$(grep -c -v "^#" ${name}_${it}.vcf)
+		if [ "$muts" -eq "0" ]; then
 			echo WARNING: vcf file empty
+			cat $ref > ${name}_${it}_cons.fasta
+		else
+			vcf2fasta -f $ref -p ${name}_${it}_ -P 1 ${name}_${it}.vcf
+			mv ${name}_${it}_unknown* ${name}_${it}_cons.fasta
 		fi
-		vcf2fasta -f $ref -p ${name}_${it}_ -P 1 ${name}_${it}.vcf
-		rm ${name}_${it}_cons.fasta
-		mv ${name}_${it}_unknown* ${name}_${it}_cons.fasta
 
 		### create vcf with lofreq
-		rm ${name}_${it}_lofreq.vcf
-		lofreq call -f $ref -o ${name}_${it}_lofreq.vcf ${name}_${it}.bam
+		rm -f ${name}_${it}_lofreq.vcf
+		lofreq call-parallel --pp-threads 10 -f $ref -o ${name}_${it}_lofreq.vcf ${name}_${it}.bam
 	
 		### calculate depth
 		samtools depth ${name}_${it}.bam > ${name}_${it}.depth
 	
 		### remove temporary files of this iteration
-		rm ${name}_${it}.sam
-		#rm ${name}_${it}.vcf
-		rm ${name}_${it}_smalt_index.*
-		rm ${name}_*_cons.fasta.fai
+		rm -f ${name}_${it}.sam
+		rm -f ${name}_${it}.vcf
+		rm -f ${name}_${it}_smalt_index.*
+		rm -f ${name}_*_cons.fasta.fai
 		
 		### new ref for next iteration
 		ref=${name}_${it}_cons.fasta
@@ -139,7 +133,7 @@ for i in $list; do
 	done
 	
 	### remove temporary files
-	rm ${name}_reads.fastq
-	rm ${name}_reads_contigs.fasta
+	rm -f ${name}_reads.fastq
+	rm -f ${name}_reads_contigs.fasta
 	rm -rf ${name}
 done
