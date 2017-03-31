@@ -100,7 +100,7 @@ for i in $list; do
 			smalt map -n 28 -x -y 0.5 -f samsoft -o ${name}_${it}.sam ${name}_${it}_smalt_index ${name}_reads.fastq
 		fi
 		
-		samtools view -Su ${name}_${it}.sam | samtools sort - ${name}_${it}
+		samtools view -Su ${name}_${it}.sam | samtools sort -o ${name}_${it}.bam
 		samtools index ${name}_${it}.bam	
 
 		### create consensus with freebayes

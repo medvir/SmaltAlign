@@ -1,8 +1,6 @@
 ### cov_plot.R
 
-#path = commandArgs[1]
-path = "/Volumes/huber.michael/Diagnostics/experiments/170315/"
-
+path = "/Volumes/data/Diagnostics/experiments/170329_HCV/"
 
 library(tidyverse)
 library(stringr)
@@ -23,7 +21,6 @@ for (i in files) {
 }
 
 plot = data %>%
-        #filter(pos <= 1000) %>%
         ggplot(aes(x=pos, y=cov, color=iteration)) +
                 geom_line(size=.2) +
                 xlab('genome position') +

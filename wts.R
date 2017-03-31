@@ -1,14 +1,12 @@
 ### wts.R
 
-#path = commandArgs[1]
-path = "/Volumes/huber.michael/Diagnostics/experiments/170315/"
+path = "/Volumes/data/Diagnostics/experiments/170329_HCV/"
 
 ### minority variant threshold (%)
 variant_threshold = 15
 
 ### minimal coverage required (reads)
-minimal_coverage = 3 
-
+minimal_coverage = 3
 
 library(tidyverse)
 library(stringr)
@@ -51,14 +49,17 @@ for (i in files) {
         cons_file = paste0(path, name_i, "_cons.fasta")
         depth_file = paste0(path, name_i, ".depth")
         
-        if (class(try(read.table(vcf_file))) == "try-error") {next} ### next if vcf file is empty
-        vcf_data = try(read.table(vcf_file, quote="\"")) %>%
-                rename(CHROM = V1, POS = V2, ID = V3, REF = V4, ALT = V5, QUAL = V6, FILTER = V7, INFO = V8) %>%
-                separate (INFO, c("DP", "AF", "SB", "DP4"), sep = ";", extra = "drop") %>%
-                select(POS, REF, ALT, DP, AF) %>%
-                mutate(DP = gsub("DP=" ,"", DP)) %>%
-                mutate(AF = round(as.numeric(gsub("AF=" ,"", AF))*100,1)) %>%
-                filter(AF >= variant_threshold) ### filter for AF >= variant_threshold
+        if (class(try(read.table(vcf_file))) == "try-error") {
+                vcf_data = data.frame(POS = 1, REF= NA, ALT= NA, DP= NA, AF= NA) ### if vcf file is empty
+                } else {
+                vcf_data = try(read.table(vcf_file, quote="\"")) %>%
+                        rename(CHROM = V1, POS = V2, ID = V3, REF = V4, ALT = V5, QUAL = V6, FILTER = V7, INFO = V8) %>%
+                        separate (INFO, c("DP", "AF", "SB", "DP4"), sep = ";", extra = "drop") %>%
+                        select(POS, REF, ALT, DP, AF) %>%
+                        mutate(DP = gsub("DP=" ,"", DP)) %>%
+                        mutate(AF = round(as.numeric(gsub("AF=" ,"", AF))*100,1)) %>%
+                        filter(AF >= variant_threshold) ### filter for AF >= variant_threshold
+                }
     
         cons_data = data.frame(CONS = unlist(strsplit(readLines(cons_file)[-1], ""))) %>%
                 mutate(POS = seq.int(nrow(.)))
@@ -75,7 +76,7 @@ for (i in files) {
                 mutate(CONS = toupper(as.character(CONS)))
         
         ### exit loop for this sample if alignment not correct
-        if (!(all(comb_data$CONS == comb_data$REF, na.rm = TRUE))) {next} 
+        if (!(all(comb_data$CONS == comb_data$REF, na.rm = TRUE))) {next}
         
         ### call wobbles
         comb_data = comb_data %>%
