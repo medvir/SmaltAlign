@@ -43,7 +43,6 @@ if [[ -n $1 ]]; then
     sample_dir=$1
 fi
 
-
 ### convert relative to absolute path
 ref=$( readlink -f $ref )
 sample_dir=$( readlink -f $sample_dir )
