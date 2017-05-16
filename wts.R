@@ -1,9 +1,13 @@
 ### wts.R
 
-path = "/Volumes/data/Diagnostics/experiments/170329_HCV/"
+#path = "/Volumes/huber.michael/Diagnostics/experiments/HCV_NanoPore/"
+#path = "/Volumes/data/Diagnostics/experiments/170426_HCV/"
+path = "/Volumes/huber.michael/Diagnostics/experiments/HCV_amplicon_comparison/8_Pat_G1a_NS5A/"
+path = "/Volumes/data/Diagnostics/experiments/170215/"
+
 
 ### minority variant threshold (%)
-variant_threshold = 15
+variant_threshold = 1
 
 ### minimal coverage required (reads)
 minimal_coverage = 3
@@ -70,10 +74,12 @@ for (i in files) {
         
         comb_data = full_join(cons_data, vcf_data, "POS") %>%
                 full_join(cov_data, "POS") %>%
-                #filter(POS <= 1000) %>% ### filter for positions
                 mutate(REF = toupper(as.character(REF))) %>%
                 mutate(ALT = toupper(as.character(ALT))) %>%
                 mutate(CONS = toupper(as.character(CONS)))
+        
+        ### filter for short amplicons
+        #comb_data = comb_data %>% filter(POS >= 0 & POS <= 2000)
         
         ### exit loop for this sample if alignment not correct
         if (!(all(comb_data$CONS == comb_data$REF, na.rm = TRUE))) {next}
@@ -102,3 +108,4 @@ for (i in files) {
         write.csv(comb_data, paste0(path, name_i,  "_", variant_threshold, ".csv"))
         write.fasta(paste(comb_data$WTS, collapse = ""), name_i, paste0(path, name_i, "_", variant_threshold, "_WTS.fasta"), open = "w", nbchar = 60)
 }
+
