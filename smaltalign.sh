@@ -105,12 +105,12 @@ for i in $list; do
 		### create consensus with freebayes
 		freebayes -f $ref -p 1 ${name}_${it}.bam > ${name}_${it}.vcf
 		muts=$(grep -c -v "^#" ${name}_${it}.vcf)
-		if [ "$muts" -eq "0" ]; then
-			echo WARNING: vcf file empty
+        if [ "$muts" -eq "0" ]; then
+            echo WARNING: vcf file empty
             cat $ref > ${name}_${it}_cons.fasta
         else
-			vcf2fasta -f $ref -p ${name}_${it}_ -P 1 ${name}_${it}.vcf
-			mv ${name}_${it}_unknown* ${name}_${it}_cons.fasta
+            vcf2fasta -f $ref -p ${name}_${it}_ -P 1 ${name}_${it}.vcf
+            mv ${name}_${it}_unknown* ${name}_${it}_cons.fasta
         fi
 
 		### create vcf with lofreq
