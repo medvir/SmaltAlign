@@ -1,7 +1,6 @@
 ### cov_plot.R
 
-#path = "/Volumes/huber.michael/Diagnostics/experiments/HCV_NanoPore/"
-path = "/Volumes/data/Diagnostics/experiments/170215/"
+path = "/Volumes/data/Diagnostics/experiments/170526/"
 
 library(tidyverse)
 library(stringr)

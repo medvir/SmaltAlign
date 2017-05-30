@@ -1,13 +1,9 @@
 ### wts.R
 
-#path = "/Volumes/huber.michael/Diagnostics/experiments/HCV_NanoPore/"
-#path = "/Volumes/data/Diagnostics/experiments/170426_HCV/"
-path = "/Volumes/huber.michael/Diagnostics/experiments/HCV_amplicon_comparison/8_Pat_G1a_NS5A/"
-path = "/Volumes/data/Diagnostics/experiments/170215/"
-
+path = "/Volumes/data/Diagnostics/experiments/170526/"
 
 ### minority variant threshold (%)
-variant_threshold = 1
+variant_threshold = 15
 
 ### minimal coverage required (reads)
 minimal_coverage = 3
@@ -23,12 +19,15 @@ files = files[grep(paste0(max(str_sub(files, -12, -12)), "_lofreq.vcf"), files)]
 call_wobbles <- function(nuc_list) {
         ### function to call ambiguous nucleotides (wobbles)
         ### input is a list of nucleotides (nuc_list, length may be greater than 2)
-        nuc_list = toupper(nuc_list) %>% unique() %>% .[!is.na(.)]  ### NAs in nuc_list are ignored (e.g. if position not covered, returns NA)
-        if (length(nuc_list) == 0) {return(NA)}
+
+        nuc_list = nuc_list %>% toupper() %>% unique() %>%.[!is.na(.)] ### NAs in nuc_list are ignored (e.g. if position not covered, returns NA)
+        
         for (i in 1:length(nuc_list)) {
                 if (nchar(nuc_list[i]) > 1) {return("insertion")}   ### returns "insertion" if nuc_list not composed of single characters
                 if (!(is.element(nuc_list[i], c("A", "G", "C", "T", "N")))) {return("unkown_nucleotide")}   ### returns "unkown_nucleotide" if characters other than A, G, C, T, N in nuc_list
                 }
+        
+        if (length(nuc_list) == 0) {return(NA)}
         if ("N" %in% nuc_list | length(nuc_list) == 4) {return("N")}  ### returns "N" if at least one N or all four nucleotides included in nuc_list
         if (length(nuc_list) == 1) {return(nuc_list[1])}  ### one single nucleotide
         if (length(nuc_list) == 2) {  ### two different nucleotides
@@ -36,7 +35,7 @@ call_wobbles <- function(nuc_list) {
                 names(IUPAC) = c("A", "G", "C", "T")
                 row.names(IUPAC) = c("A", "G", "C", "T")
                 return(as.character(IUPAC[nuc_list[1], nuc_list[2]]))
-        }
+                }
         if (length(nuc_list) == 3) {  ### three different nucleotides
                 if (!("A" %in% nuc_list)) {return("B")}
                 if (!("C" %in% nuc_list)) {return("D")}
@@ -45,9 +44,9 @@ call_wobbles <- function(nuc_list) {
                 }
         }
 
-
 ### Loop over all files
 for (i in files) {
+
         name_i = gsub("_lofreq.vcf", "", i)
         vcf_file = paste0(path, name_i, "_lofreq.vcf")
         cons_file = paste0(path, name_i, "_cons.fasta")
@@ -80,15 +79,15 @@ for (i in files) {
         
         ### filter for short amplicons
         #comb_data = comb_data %>% filter(POS >= 0 & POS <= 2000)
-        
-        ### exit loop for this sample if alignment not correct
-        if (!(all(comb_data$CONS == comb_data$REF, na.rm = TRUE))) {next}
-        
+
         ### call wobbles
         comb_data = comb_data %>%
-                select(POS, CONS, ALT, AF, COV) %>%
-                rename(REF = CONS) %>%
-                mutate(WTS = apply(.[,c('REF', 'ALT')], 1, function(x) call_wobbles(c(x['REF'], x['ALT'])))) 
+                mutate(REF = ifelse(is.na(REF), CONS,       ### use CONS when REF is NA
+                             ifelse(REF == CONS, REF,       ### use REF (or CONS) if REF and CONS are identical
+                             ifelse(abs(AF-50) <= 15, REF,  ### use REF although CONS is different when similar frequency
+                             "error")))) %>%                ### else "error"
+                mutate(WTS = apply(.[,c('REF', 'ALT')], 1, function(x) call_wobbles(c(x['REF'], x['ALT'])))) %>%
+                select(POS, REF, ALT, AF, COV, WTS)
         
         ### resolve duplicate lines in vcf_data for two variants
         for (j in nrow(comb_data):2) {
@@ -108,4 +107,3 @@ for (i in files) {
         write.csv(comb_data, paste0(path, name_i,  "_", variant_threshold, ".csv"))
         write.fasta(paste(comb_data$WTS, collapse = ""), name_i, paste0(path, name_i, "_", variant_threshold, "_WTS.fasta"), open = "w", nbchar = 60)
 }
-

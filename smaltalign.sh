@@ -107,11 +107,11 @@ for i in $list; do
 		muts=$(grep -c -v "^#" ${name}_${it}.vcf)
 		if [ "$muts" -eq "0" ]; then
 			echo WARNING: vcf file empty
-			cat $ref > ${name}_${it}_cons.fasta
-		else
+            cat $ref > ${name}_${it}_cons.fasta
+        else
 			vcf2fasta -f $ref -p ${name}_${it}_ -P 1 ${name}_${it}.vcf
 			mv ${name}_${it}_unknown* ${name}_${it}_cons.fasta
-		fi
+        fi
 
 		### create vcf with lofreq
 		rm -f ${name}_${it}_lofreq.vcf
@@ -129,8 +129,8 @@ for i in $list; do
 		### new ref for next iteration
 		ref=${name}_${it}_cons.fasta
 		((it+=1))
-	done
-	
+    done
+    
 	### remove temporary files
 	rm -f ${name}_reads.fastq
 	rm -f ${name}_reads_contigs.fasta
