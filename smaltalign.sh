@@ -71,7 +71,7 @@ for i in $list; do
 	echo sample $name, $n_sample reads, de-novo alignment 
 	echo "*******************************************************************************"
 	velveth ${name} 29 -fastq ${name}_reads.fastq
-	velvetg ${name} -min_contig_lgth 100
+	velvetg ${name} -min_contig_lgth 200
 	
 	### fake fastq of contigs and cat to reads in triplicate
 	awk '/^>/ {printf("\n%s\n",$0);next; } { printf("%s",$0);}  END {printf("\n");}' < ${name}/contigs.fa | awk 'BEGIN {RS = ">" ; FS = "\n"} NR > 1 {print "@"$1"\n"$2"\n+"$1"\n"gensub(/./, "I", "g", $2)}' > ${name}/contigs.fastq
