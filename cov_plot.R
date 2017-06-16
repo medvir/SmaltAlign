@@ -1,6 +1,6 @@
 ### cov_plot.R
 
-path = "/Volumes/data/Diagnostics/experiments/170526/"
+path = "/Volumes/data/Diagnostics/experiments/170609/"
 
 library(tidyverse)
 library(stringr)
