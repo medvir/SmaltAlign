@@ -1,6 +1,6 @@
 ### cov_plot.R
 
-path = "/Volumes/data/Diagnostics/experiments/170609/"
+path = "/Volumes/data/Diagnostics/experiments/170623/"
 
 library(tidyverse)
 library(stringr)
@@ -11,7 +11,7 @@ data = data.frame()
 
 for (i in files) {
         
-        #if (!(grepl("1000355893", i))) {next} ### select sample
+        #if (!(grepl("1000355893", i))) {next} ### select single sample
         
         if (file.info(paste0(path, i))$size == 0) {next} ### next if depth file is empty
         depth_i = read_delim(paste0(path, i), "\t", col_names = FALSE, trim_ws = TRUE, col_types = "cii") %>% select(X3) %>% unlist()
