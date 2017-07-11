@@ -1,6 +1,6 @@
 ### wts.R
 
-path = "/Volumes/data/Diagnostics/experiments/170623/"
+path = "/Volumes/data/Diagnostics/experiments/170707/"
 
 ### minority variant threshold (%)
 variant_threshold = 15
