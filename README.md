@@ -1,13 +1,16 @@
 # SmaltAlign
-Initially used to make quick alignments of fastq reads against a reference using smalt, now mainly used for HIV and HCV consensus generation.
+Initially, the script was used to make quick alignments of fastq reads against a reference using smalt, now it’s mainly used for HIV and HCV consensus generation for diagnostics.
 `smaltalign.sh` is the main script. It does the following:
-- sample reads
-- make de novo alignement 
-- align reads and de novo contigs against reference
-- create consensus and vcf round 1
-- align reads (without de novo contigs) against consensus of round 1
-- create consensus and vcf round 2
-- ...
+- sample reads with seqtk
+- make de novo alignment of sampled reads with velvet
+- align sampled reads and de novo contigs in triplicate against reference with smalt
+- create consensus of iteration 1 with freebayes
+- create vcf of iteration 1 with lofreq
+- calculate depth of iteration 1 with samtools
+- re-align sampled reads (without de novo contigs) against consensus of iteration 1
+- create consensus, vcf and depth of iteration 2
+- repeat for i iterations 
+
 All the necessary references are in the References directory.
 
 ### Usage
