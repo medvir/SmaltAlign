@@ -29,6 +29,6 @@ Used to run multiple samples in the current working directory with different ref
 The path to the working directory has to be adapted manually in the first line.
 
 ### wts.R
-`wts.R` is an R script to combine consenus sequence, variants and coverage for the last iteration of all `lofreq.vcf` files in a directory.
-It saves a `WTS.faste` file containging the consensus sequence with wobbles (at a certain threshold) and a `.csv` file  containing coverage and variant frequencies for every position.
+`wts.R` is an R script to combine consensus sequence, variants and coverage for the last iteration of all `lofreq.vcf` files in a directory.
+It saves a `WTS.fasta` file containing the consensus sequence with wobbles (at a certain threshold) and a `.csv` file  containing coverage and variant frequencies for every position.
 The path to the working directory, the variant threshold and the minimal coverage have to be adapted manually in the first lines.
