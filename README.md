@@ -9,13 +9,18 @@ Initially, the script was used to make quick alignments of fastq reads against a
 - calculate depth of iteration 1 with samtools
 - re-align sampled reads (without de novo contigs) against consensus of iteration 1
 - create consensus, vcf and depth of iteration 2
-- repeat for i iterations 
+- repeat for i iterations
 
 All the necessary references are in the References directory.
 
+### Installation of requirements.txt
+To install all dependencies (listed above) you can use the command `conda install --file requirements.txt` (if [Bioconda](https://bioconda.github.io/) is installed).  
+That's an easy way to assure a successful run of SmaltAlign.
+
+
 ### Usage
-	smaltalign.sh -r <reference_file> [options] <fastq_file/directory> 
-	
+	smaltalign.sh -r <reference_file> [options] <fastq_file/directory>
+
 	OPTIONS
 	-r       reference
 	-n INT   number of reads (default 200'000)
