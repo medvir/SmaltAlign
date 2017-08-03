@@ -13,9 +13,12 @@ Initially, the script was used to make quick alignments of fastq reads against a
 
 All the necessary references are in the References directory.
 
-### Installation of requirements.txt
-To install all dependencies (listed above) you can use the command `conda install --file requirements.txt` (if [Bioconda](https://bioconda.github.io/) is installed).  
-That's an easy way to assure a successful run of SmaltAlign.
+### Use conda environment from file
+To ensure you have all dependencies needed for SmaltAlign installed you can use the `environment.yml` file.  
+First you need to have [Conda](https://conda.io/docs/install/quick.html) installed).  
+With the command `conda env create -f <path>/environment.yml` you will create a copy of the SmaltAlign environment.  
+You enter the environment with the command `source activate SmaltAlign` (and leave it with `source deactivate`).  
+For more information visit following link to [Managing environments](https://conda.io/docs/using/envs.html).
 
 
 ### Usage
