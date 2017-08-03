@@ -1,6 +1,0 @@
-seqtk==1.2
-velvet==1.2.10
-smalt==0.7.6
-freebayes==1.0.1
-lofreq==2.1.2
-samtools==1.4
