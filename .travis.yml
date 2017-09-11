@@ -3,7 +3,7 @@ python:
   - "2.7"
 install:
   - sudo apt-get update
-  - if wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
+  - wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - hash -r
@@ -16,4 +16,4 @@ install:
   - source activate SmaltAlign
 
 script:
-  ./smaltalign.sh -r References/HCV-1a.fasta ./tests/HCV-1a_generated.fastq.gz -n 10000
+  ./smaltalign.sh -r References/HCV-1a.fasta -n 10000 ./tests/HCV-1a_generated.fastq.gz
