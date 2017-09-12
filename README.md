@@ -1,4 +1,7 @@
 # SmaltAlign
+
+[![Build Status](https://travis-ci.org/medvir/SmaltAlign.svg?branch=master)](https://travis-ci.org/medvir/SmaltAlign)
+
 Initially, the script was used to make quick alignments of fastq reads against a reference using smalt, now it’s mainly used for HIV and HCV consensus generation for diagnostics.
 `smaltalign.sh` is the main script. It does the following:
 - sample reads with seqtk
