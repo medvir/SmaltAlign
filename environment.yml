@@ -1,0 +1,35 @@
+name: SmaltAlign
+channels:
+- bioconda
+- conda-forge
+- defaults
+- r
+dependencies:
+- bambamc=0.0.50=0
+- coreutils=8.25=0
+- freebayes=1.0.1=0
+- lofreq=2.1.2=py27_0
+- samtools=1.4=0
+- seqtk=1.2=0
+- smalt=0.7.6=0
+- vcflib=1.0.0_rc0=0
+- velvet=1.2.10=1
+- ca-certificates=2017.7.27.1=0
+- certifi=2017.7.27.1=py27_0
+- curl=7.54.1=0
+- krb5=1.14.2=0
+- libssh2=1.8.0=1
+- ncurses=5.9=10
+- openssl=1.0.2l=0
+- pip=9.0.1=py27_0
+- python=2.7.13=1
+- readline=6.2=0
+- setuptools=36.2.2=py27_0
+- sqlite=3.13.0=1
+- tk=8.5.19=2
+- wheel=0.29.0=py27_0
+- xz=5.2.2=0
+- zlib=1.2.11=0
+- libgcc=4.8.5=1
+prefix: /Users/stefan_schmutz/miniconda3/envs/SmaltAlign
+
