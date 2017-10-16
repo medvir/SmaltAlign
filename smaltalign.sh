@@ -94,9 +94,9 @@ for i in $list; do
 		samtools faidx $ref
 		
 		if [ "$it" -eq 1 ]; then
-			smalt map -n 28 -x -y 0.5 -f samsoft -o ${name}_${it}.sam ${name}_${it}_smalt_index ${name}_reads_contigs.fasta
+			smalt map -n 24 -x -y 0.5 -f samsoft -o ${name}_${it}.sam ${name}_${it}_smalt_index ${name}_reads_contigs.fasta
 		else
-			smalt map -n 28 -x -y 0.5 -f samsoft -o ${name}_${it}.sam ${name}_${it}_smalt_index ${name}_reads.fastq
+			smalt map -n 24 -x -y 0.5 -f samsoft -o ${name}_${it}.sam ${name}_${it}_smalt_index ${name}_reads.fastq
 		fi
 		
 		samtools view -Su ${name}_${it}.sam | samtools sort -o ${name}_${it}.bam
