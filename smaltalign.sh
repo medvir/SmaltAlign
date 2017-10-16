@@ -115,8 +115,18 @@ for i in $list; do
 
 		### create vcf with lofreq
 		rm -f ${name}_${it}_lofreq.vcf
-		lofreq call-parallel --pp-threads 10 -f $ref -o ${name}_${it}_lofreq.vcf ${name}_${it}.bam
-	
+		
+        if [ "$(uname)" == "Darwin" ]; then 
+            cores=$(sysctl -n hw.ncpu) ### Mac OS X platform
+        elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then 
+            cores=$(nproc) ### GNU/Linux platform
+        else 
+            cores=2 ### unkonwn/other platforms
+        fi
+        cores=$(expr $cores / 2) ### only run on half the cores
+        echo =-=-= lofreq with $cores cores =-=-=
+        lofreq call-parallel --pp-threads $cores -f $ref -o ${name}_${it}_lofreq.vcf ${name}_${it}.bam
+        	
 		### calculate depth
 		samtools depth ${name}_${it}.bam > ${name}_${it}.depth
 	
