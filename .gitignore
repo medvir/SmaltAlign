@@ -1,3 +1,8 @@
 .DS_Store
 ._.DS_Store
 .Rhistory
+._README.md
+._batch.sh
+._smaltalign.sh
+._wts.R
+References/*.fasta.fai
