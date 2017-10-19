@@ -1,42 +1,48 @@
-### wts.R
-
-path = "/Volumes/data/Diagnostics/experiments/170815/"
-
-### minority variant threshold (%)
-variant_threshold = 15
-
-### minimal coverage required (reads)
-minimal_coverage = 3
+#!/home/schmutz.stefan/miniconda3/envs/SmaltAlign/bin/Rscript
+args <- commandArgs(TRUE)
 
 library(tidyverse)
 library(stringr)
 library(seqinr)
 
-files = list.files(path, pattern = "lofreq.vcf")
-files = files[grep(paste0(max(str_sub(files, -12, -12)), "_lofreq.vcf"), files)] ### grep the N_lofreq.vcf files with the highest iteration
+# set path to data (terminal slash is important!)
+#path <- "/Volumes/data/Diagnostics/experiments/170815/"
+path <- paste0(args[1],"/")
 
-### functions
+# minority variant threshold (%)
+variant_threshold <- 15
+
+# minimal coverage required (reads)
+minimal_coverage <- 3
+
+files <- list.files(path, pattern = "lofreq.vcf")
+
+# grep the N_lofreq.vcf files with the highest iteration
+files <- files[grep(paste0(max(str_sub(files, -12, -12)), "_lofreq.vcf"), files)]
+
 call_wobbles <- function(nuc_list) {
         ### function to call ambiguous nucleotides (wobbles)
         ### input is a list of nucleotides (nuc_list, length may be greater than 2)
 
-        nuc_list = nuc_list %>% toupper() %>% unique() %>%.[!is.na(.)] ### NAs in nuc_list are ignored (e.g. if position not covered, returns NA)
+        nuc_list <- nuc_list %>%
+                    toupper() %>%
+                    unique() %>% .[!is.na(.)] # NAs in nuc_list are ignored (e.g. if position not covered, returns NA)
         
         for (i in 1:length(nuc_list)) {
-                if (nchar(nuc_list[i]) > 1) {return("insertion")}   ### returns "insertion" if nuc_list not composed of single characters
-                if (!(is.element(nuc_list[i], c("A", "G", "C", "T", "N")))) {return("unkown_nucleotide")}   ### returns "unkown_nucleotide" if characters other than A, G, C, T, N in nuc_list
+                if (nchar(nuc_list[i]) > 1) {return("insertion")} # returns "insertion" if nuc_list not composed of single characters
+                if (!(is.element(nuc_list[i], c("A", "G", "C", "T", "N")))) {return("unkown_nucleotide")} # returns "unkown_nucleotide" if characters other than A, G, C, T, N in nuc_list
                 }
         
         if (length(nuc_list) == 0) {return(NA)}
-        if ("N" %in% nuc_list | length(nuc_list) == 4) {return("N")}  ### returns "N" if at least one N or all four nucleotides included in nuc_list
-        if (length(nuc_list) == 1) {return(nuc_list[1])}  ### one single nucleotide
-        if (length(nuc_list) == 2) {  ### two different nucleotides
+        if ("N" %in% nuc_list | length(nuc_list) == 4) {return("N")} # returns "N" if at least one N or all four nucleotides included in nuc_list
+        if (length(nuc_list) == 1) {return(nuc_list[1])} # one single nucleotide
+        if (length(nuc_list) == 2) { # two different nucleotides
                 IUPAC = data.frame(c("A", "R", "M", "W"), c("R", "G", "S", "K"), c("M", "S", "C", "Y"), c("W", "K", "Y", "T"))
                 names(IUPAC) = c("A", "G", "C", "T")
                 row.names(IUPAC) = c("A", "G", "C", "T")
                 return(as.character(IUPAC[nuc_list[1], nuc_list[2]]))
                 }
-        if (length(nuc_list) == 3) {  ### three different nucleotides
+        if (length(nuc_list) == 3) { # three different nucleotides
                 if (!("A" %in% nuc_list)) {return("B")}
                 if (!("C" %in% nuc_list)) {return("D")}
                 if (!("G" %in% nuc_list)) {return("H")}
@@ -44,20 +50,20 @@ call_wobbles <- function(nuc_list) {
                 }
         }
 
-### Loop over all files
+# Loop over all files
 for (i in files) {
 
-        name_i = gsub("_lofreq.vcf", "", i)
-        vcf_file = paste0(path, name_i, "_lofreq.vcf")
-        cons_file = paste0(path, name_i, "_cons.fasta")
-        depth_file = paste0(path, name_i, ".depth")
+        name_i <- gsub("_lofreq.vcf", "", i)
+        vcf_file <- paste0(path, name_i, "_lofreq.vcf")
+        cons_file <- paste0(path, name_i, "_cons.fasta")
+        depth_file <- paste0(path, name_i, ".depth")
         
         if (class(try(read.table(vcf_file))) == "try-error") {
-                vcf_data = data.frame(POS = 1, REF= NA, ALT= NA, DP= NA, AF= NA) ### if vcf file is empty
+                vcf_data = data.frame(POS = 1, REF = NA, ALT = NA, DP = NA, AF = NA) # if vcf file is empty
                 } else {
-                vcf_data = try(read.table(vcf_file, quote="\"")) %>%
+                vcf_data = try(read.table(vcf_file, quote = "\"")) %>%
                         rename(CHROM = V1, POS = V2, ID = V3, REF = V4, ALT = V5, QUAL = V6, FILTER = V7, INFO = V8) %>%
-                        separate (INFO, c("DP", "AF", "SB", "DP4"), sep = ";", extra = "drop") %>%
+                        separate(INFO, c("DP", "AF", "SB", "DP4"), sep = ";", extra = "drop") %>%
                         select(POS, REF, ALT, DP, AF) %>%
                         mutate(DP = gsub("DP=" ,"", DP)) %>%
                         mutate(AF = round(as.numeric(gsub("AF=" ,"", AF))*100,1)) %>%
@@ -81,29 +87,29 @@ for (i in files) {
         #comb_data = comb_data %>% filter(POS >= 0 & POS <= 2000)
 
         ### call wobbles
-        comb_data = comb_data %>%
+        comb_data <- comb_data %>%
                 mutate(REF = ifelse(is.na(REF), CONS,       ### use CONS when REF is NA
                              ifelse(REF == CONS, REF,       ### use REF (or CONS) if REF and CONS are identical
-                             ifelse(abs(AF-50) <= 15, REF,  ### use REF although CONS is different when similar frequency
+                             ifelse(abs(AF - 50) <= 15, REF,  ### use REF although CONS is different when similar frequency
                              "error")))) %>%                ### else "error"
                 mutate(WTS = apply(.[,c('REF', 'ALT')], 1, function(x) call_wobbles(c(x['REF'], x['ALT'])))) %>%
                 select(POS, REF, ALT, AF, COV, WTS)
         
         ### resolve duplicate lines in vcf_data for two variants
         for (j in nrow(comb_data):2) {
-                if (comb_data$POS[j] == comb_data$POS[j-1]) {
-                        comb_data$WTS[j-1] = call_wobbles(c(comb_data$REF[j], comb_data$REF[j-1], comb_data$ALT[j], comb_data$ALT[j-1]))
-                        comb_data$AF[j-1] = paste(comb_data$AF[j], comb_data$AF[j-1], sep = "/")
-                        comb_data$ALT[j-1] = paste(comb_data$ALT[j], comb_data$ALT[j-1], sep = "/")
+                if (comb_data$POS[j] == comb_data$POS[j - 1]) {
+                        comb_data$WTS[j - 1] = call_wobbles(c(comb_data$REF[j], comb_data$REF[j - 1], comb_data$ALT[j], comb_data$ALT[j - 1]))
+                        comb_data$AF[j - 1] = paste(comb_data$AF[j], comb_data$AF[j - 1], sep = "/")
+                        comb_data$ALT[j - 1] = paste(comb_data$ALT[j], comb_data$ALT[j - 1], sep = "/")
                         comb_data = comb_data[-j, ]
                 }
         }
         
-        ### apply minimal coverage threshold
+        # apply minimal coverage threshold
         comb_data = comb_data %>%
                 mutate(WTS = ifelse(is.na(COV), "-", ifelse(COV < minimal_coverage, "N", WTS)))
         
-        ### write output files
+        # write output files
         write.csv(comb_data, paste0(path, name_i,  "_", variant_threshold, ".csv"))
         write.fasta(paste(comb_data$WTS, collapse = ""), name_i, paste0(path, name_i, "_", variant_threshold, "_WTS.fasta"), open = "w", nbchar = 60)
 }
