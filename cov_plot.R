@@ -1,9 +1,15 @@
-### cov_plot.R
-path = "/Volumes/data/Diagnostics/experiments/170815/"
+#!/home/schmutz.stefan/miniconda3/envs/SmaltAlign/bin/Rscript
+args <- commandArgs(TRUE)
 
 library(tidyverse)
 library(stringr)
 library(cowplot)
+
+# set path to data (terminal slash is important!)
+#path <- "/Volumes/data/Diagnostics/experiments/170815/"
+path <- paste0(args[1],"/")
+
+
 
 files = list.files(path, pattern = "depth")
 data = data.frame()
@@ -23,10 +29,10 @@ for (i in files) {
 }
 
 plot = data %>%
-        ggplot(aes(x=pos, y=cov, color=iteration)) +
-                geom_line(size=.2) +
-                xlab('genome position') +
-                ylab('coverage (reads)') +
+         ggplot(aes(x = pos, y = cov, color = iteration)) +
+                geom_line(size = .2) +
+                xlab("genome position") +
+                ylab("coverage (reads)") +
                 scale_y_log10(breaks = c(1,10,100,1000,10000,100000)) +
                 facet_wrap( ~ file) +
                 panel_border() +
@@ -36,6 +42,6 @@ plot = data %>%
                 theme(strip.text = element_text(size = 7.5)) +
                 theme(legend.title = element_text(size = 7.5)) +
                 theme(legend.text = element_text(size = 7.5)) +
-                theme(legend.position="bottom")
-print(plot)
-ggsave(filename=paste0(path, "coverage.pdf"), plot, width = 30/2.54, height = 21/2.54)
+                theme(legend.position = "bottom")
+
+ggsave(filename = paste0(path, "coverage.pdf"), plot, width = 30/2.54, height = 21/2.54)
