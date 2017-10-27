@@ -1,20 +1,21 @@
 #!/bin/bash
 
-# set script directory
-#script_dir=$(dirname "$(readlink -f "$0")")
-script_dir="/home/schmutz.stefan/Repositories/SmaltAlign/"
+# set directory where smaltalign.sh is located
+script_dir="/data/Diagnostics/Repositories/SmaltAlign/"
 
 # set sample directory to the directory where this file is
 sample_dir=$(dirname "$(readlink -f "$0")")
 
 # set SmaltAlign parameters
-n=2000 # number of reads (default 200000)
+n=200000 # number of reads (default 200000)
 i=4 # iterations (default 4)
 
 # define Virus and subtype of the sequencing samples
 HCV_1a=("")
 
 HCV_1b=("")
+
+HCV_1h=("")
 
 HCV_1l=("")
 
@@ -31,7 +32,7 @@ HIV_2=("")
 HSV_1=("")
 
 # define an array containing all Viruses
-viruses=(HCV_1a HCV_1b HCV_1l
+viruses=(HCV_1a HCV_1b HCV_1h HCV_1l
          HCV_2c
          HCV_3a
          HCV_4d
@@ -47,10 +48,13 @@ do
         then
             continue
         fi
-        ${script_dir}/smaltalign.sh -r ${script_dir}/References/${virus}.fasta -n $n -i $i $sample
+        ${script_dir}/smaltalign.sh \
+        -r ${script_dir}/References/${virus}.fasta \
+        -n $n \
+        -i $i $sample
+
+        # run R scripts with sample_dir as variable input
+        Rscript ${script_dir}/cov_plot.R ${sample_dir}
+        Rscript ${script_dir}/wts.R ${sample_dir}
     done
 done
-
-# run R scripts
-Rscript ${script_dir}/cov_plot.R ${sample_dir}
-Rscript ${script_dir}/wts.R ${sample_dir}
