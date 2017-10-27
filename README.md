@@ -33,7 +33,17 @@ For more information visit following link to [Managing environments](https://con
 	-i INT   iterations (default 4)
 
 ### batch.sh
-Used to run multiple samples in the current working directory with different references in one batch.
+Used to run multiple samples in the current working directory with different references in one batch.  
+To analyse the results of a Diagnostic sequencing run following steps need to be done:
+* create a new folder in `/data/Diagnostics/experiments/` with the date of the sequencing run (start-date, yymmdd)
+* in that new folder create links to the .fastq files you want to analyse (`ln -sv`) and copy the `SampleSheet.csv` of that run
+* copy the `batch.sh` file into that new folder
+* add the filenames (you can use `sampleID_to_filename.xltx`) to the empty virus arrays in `batch.sh` separated by a new line (works if you copy from the excel file)
+* activate SmaltAlign environment (`source activate SmaltAlign`)
+* execute `./batch.sh`
+
+After the iterations of every sample the .R scripts are executed and the progress is visible in `coverage.pdf`.
+
 
 ### cov_plot.R
 `cov_plot.R` is an R script to plot and save the coverage of all iterations of all `.depth` files in the working directory.
