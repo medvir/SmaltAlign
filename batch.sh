@@ -54,9 +54,9 @@ do
         -r ${script_dir}/References/${virus}.fasta \
         -n $n \
         -i $i $sample
-
-        # run R scripts with sample_dir as variable input
-        Rscript ${script_dir}/cov_plot.R ${sample_dir}
-        Rscript ${script_dir}/wts.R ${sample_dir}
     done
 done
+
+# run R scripts with sample_dir as variable input
+Rscript ${script_dir}/cov_plot.R ${sample_dir}
+Rscript ${script_dir}/wts.R ${sample_dir}
