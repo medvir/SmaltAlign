@@ -33,13 +33,30 @@ HIV_2=("")
 
 HSV_1=("")
 
+IAV_seg1=("")
+
+IAV_seg2=("")
+
+IAV_seg3=("")
+
+IAV_seg4=("")
+
+IAV_seg5=("")
+
+IAV_seg6=("")
+
+IAV_seg7=("")
+
+IAV_seg8=("")
+
 # define an array containing all Viruses
 viruses=(HCV_1a HCV_1b HCV_1h HCV_1l
          HCV_2c
          HCV_3a HCV_3b
          HCV_4d
          HIV_1 HIV_2
-         HSV_1)
+         HSV_1
+         IAV_seg1 IAV_seg2 IAV_seg3 IAV_seg4 IAV_seg5 IAV_seg6 IAV_seg7 IAV_seg8)
 
 # run SmaltAlign for all defined samples
 for virus in "${viruses[@]}"
