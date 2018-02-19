@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # set directory where smaltalign.sh is located
-script_dir="/data/Diagnostics/Repositories/SmaltAlign/"
+script_dir="/analyses/Diagnostics/Repositories/SmaltAlign/"
 
 # set sample directory to the directory where this file is
 sample_dir=$(dirname "$(readlink -f "$0")")
