@@ -27,6 +27,8 @@ HCV_3b=("")
 
 HCV_4d=("")
 
+HCV_4f=("")
+
 HIV_1=("")
 
 HIV_2=("")
@@ -53,7 +55,7 @@ IAV_seg8=("")
 viruses=(HCV_1a HCV_1b HCV_1h HCV_1l
          HCV_2c
          HCV_3a HCV_3b
-         HCV_4d
+         HCV_4d HCV_4f
          HIV_1 HIV_2
          HSV_1
          IAV_seg1 IAV_seg2 IAV_seg3 IAV_seg4 IAV_seg5 IAV_seg6 IAV_seg7 IAV_seg8)
