@@ -35,21 +35,37 @@ HIV_2=("")
 
 HSV_1=("")
 
-IAV_seg1=("")
+IAV_seg1_H1N1=("")
 
-IAV_seg2=("")
+IAV_seg2_H1N1=("")
 
-IAV_seg3=("")
+IAV_seg3_H1N1=("")
 
-IAV_seg4=("")
+IAV_seg4_H1N1=("")
 
-IAV_seg5=("")
+IAV_seg5_H1N1=("")
 
-IAV_seg6=("")
+IAV_seg6_H1N1=("")
 
-IAV_seg7=("")
+IAV_seg7_H1N1=("")
 
-IAV_seg8=("")
+IAV_seg8_H1N1=("")
+
+IAV_seg1_H3N2=("")
+
+IAV_seg2_H3N2=("")
+
+IAV_seg3_H3N2=("")
+
+IAV_seg4_H3N2=("")
+
+IAV_seg5_H3N2=("")
+
+IAV_seg6_H3N2=("")
+
+IAV_seg7_H3N2=("")
+
+IAV_seg8_H3N2=("")
 
 # define an array containing all Viruses
 viruses=(HCV_1a HCV_1b HCV_1h HCV_1l
@@ -58,7 +74,8 @@ viruses=(HCV_1a HCV_1b HCV_1h HCV_1l
          HCV_4d HCV_4f
          HIV_1 HIV_2
          HSV_1
-         IAV_seg1 IAV_seg2 IAV_seg3 IAV_seg4 IAV_seg5 IAV_seg6 IAV_seg7 IAV_seg8)
+         IAV_seg1_H1N1 IAV_seg2_H1N1 IAV_seg3_H1N1 IAV_seg4_H1N1 IAV_seg5_H1N1 IAV_seg6_H1N1 IAV_seg7_H1N1 IAV_seg8_H1N1
+         IAV_seg1_H3N2 IAV_seg2_H3N2 IAV_seg3_H3N2 IAV_seg4_H3N2 IAV_seg5_H3N2 IAV_seg6_H3N2 IAV_seg7_H3N2 IAV_seg8_H3N2)
 
 # run SmaltAlign for all defined samples
 for virus in "${viruses[@]}"
