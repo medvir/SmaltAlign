@@ -9,18 +9,18 @@ library(cowplot)
 #path <- "/Volumes/data/Diagnostics/experiments/170815/"
 path <- paste0(args[1],"/")
 
-
-
 files = list.files(path, pattern = "depth")
 data = data.frame()
 
 for (i in files) {
         
-        #if (!(grepl("1000361846", i))) {next} ### select single sample
-        
-        if (file.info(paste0(path, i))$size == 0) {next} ### next if depth file is empty
-        depth_i = read_delim(paste0(path, i), "\t", col_names = FALSE, trim_ws = TRUE, col_types = "cii") %>% select(X3) %>% unlist()
-        names(depth_i) = read_delim(paste0(path, i), "\t", col_names = FALSE, trim_ws = TRUE) %>% select(X2) %>% unlist()
+        if (file.info(paste0(path, i))$size == 0) {
+                depth_i = c(0) #if depth file is empty
+                names(depth_i) = c(1)
+            } else {
+                depth_i = read_delim(paste0(path, i), "\t", col_names = FALSE, trim_ws = TRUE, col_types = "cii") %>% pull(X3)
+                names(depth_i) = read_delim(paste0(path, i), "\t", col_names = FALSE, trim_ws = TRUE) %>% pull(X2)
+            }
         data_i = data.frame(pos = 1:max(as.numeric(names(depth_i)))) %>%
                 mutate(cov = ifelse(is.na(depth_i[as.character(pos)]), 0, depth_i[as.character(pos)])) %>%
                 mutate(file = str_sub(i, 1, -9)) %>%
