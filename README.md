@@ -44,12 +44,10 @@ To analyse the results of a Diagnostic sequencing run following steps need to be
 
 After the iterations of every sample the .R scripts are executed and the progress is visible in `coverage.pdf`.
 
-
 ### cov_plot.R
 `cov_plot.R` is an R script to plot and save the coverage of all iterations of all `.depth` files in the working directory.
-The path to the working directory has to be adapted manually in the first line.
 
 ### wts.R
 `wts.R` is an R script to combine consensus sequence, variants and coverage for the last iteration of all `lofreq.vcf` files in a directory.
-It saves a `WTS.fasta` file containing the consensus sequence with wobbles (at a certain threshold) and a `.csv` file  containing coverage and variant frequencies for every position.
-The path to the working directory, the variant threshold and the minimal coverage have to be adapted manually in the first lines.
+It saves a `_x_WTS.fasta` file containing the consensus sequence with wobbles (at a certain threshold x) and a `.csv` file  containing coverage and variant frequencies for every position.
+The the variant threshold and the minimal coverage have to be adapted manually in the first lines.
