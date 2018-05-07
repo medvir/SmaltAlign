@@ -13,7 +13,7 @@ allrefs = dict([(s.id.split('_')[0], str(s.seq))
 
 # index flugenomes.fasta
 cml = 'bwa index /rv_home/stschmu/Repositories/SmaltAlign/References/flugenomes.fasta'
-subprocess.call(cml)
+subprocess.call(cml, shell=True)
 # align against all genomes
 cml = 'bwa mem -t 24 /rv_home/stschmu/Repositories/SmaltAlign/References/flugenomes.fasta %s | samtools view -F 4 > aln.sam' % readfile
 subprocess.call(cml, shell=True)
