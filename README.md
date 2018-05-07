@@ -44,6 +44,10 @@ To analyse the results of a Diagnostic sequencing run following steps need to be
 
 After the iterations of every sample the .R scripts are executed and the progress is visible in `coverage.pdf`.
 
+### batch_influenza.sh
+To specially process Influenza sequences with SmaltAlign, this shell script was written.  
+Usage is the same as in batch.sh except that you don't need to enter the filenames.
+
 ### cov_plot.R
 `cov_plot.R` is an R script to plot and save the coverage of all iterations of all `.depth` files in the working directory.
 
