@@ -25,7 +25,7 @@ subprocess.call(cml, shell=True)
 df = pd.read_table('ref.tsv', names=['accn', 'segment', 'serotype'])
 count_ref = df.groupby(['segment', 'accn', 'serotype']).size()
 c = count_ref.reset_index(name='counts').sort_values(['segment', 'counts'], ascending=[True, False])
-c.to_csv('counts.csv', index=False, sep='\t')
+c.to_csv('counts.tsv', index=False, sep='\t')
 print(c.groupby('segment').head(3))
 
 for segment in range(1, 9):
