@@ -26,7 +26,7 @@ for filename in $sample_dir/*.fastq.gz; do
     $script_dir/select_ref.py $filename
 
     for segment in {1..8}; do
-        cd segment$segment
+    (   cd segment$segment
         # run smaltalign.sh with the previously selected best reference
         ${script_dir}/smaltalign.sh \
         -r ../segment-$segment.fasta \
@@ -37,8 +37,9 @@ for filename in $sample_dir/*.fastq.gz; do
         source deactivate
         Rscript ${script_dir}/wts.R ./
         source activate SmaltAlign
-        cd ../
+        cd ../ ) &
     done
+    wait
 
     cd ../
 done
