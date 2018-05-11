@@ -46,7 +46,7 @@ To analyse the results of a Diagnostic sequencing run following steps need to be
 This shell script was written to process Influenza sequences with SmaltAlign:
 * iteration over all `.fastq.gz` files in the current directory
 * create a folder for each sample containing segment1-8 subfolders
-* run `select_ref.py` (written by @ozagordi) which selects the best reference sequence for each segment from a Influenza reference database (selected sequences from the [NCBI Influenza Virus Database](https://www.ncbi.nlm.nih.gov/genomes/FLU/Database/nph-select.cgi?go=database)
+* run `select_ref.py` (written by @ozagordi) which selects the best reference sequence for each segment from a Influenza reference database (selected sequences from the [NCBI Influenza Virus Database](https://www.ncbi.nlm.nih.gov/genomes/FLU/Database/nph-select.cgi?go=database))
 ![IV-A references](References/genomes_query.png)
 * using the best reference sequence to run `smaltalign.sh` for each segment
 * run Rscripts `cov_plot.R` and `wts.R`  
