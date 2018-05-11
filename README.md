@@ -42,10 +42,15 @@ To analyse the results of a Diagnostic sequencing run following steps need to be
 * activate SmaltAlign environment (`source activate SmaltAlign`)
 * execute `./batch.sh`
 
-After the iterations of every sample the .R scripts are executed and the progress is visible in `coverage.pdf`.
-
 ### batch_influenza.sh
-To specially process Influenza sequences with SmaltAlign, this shell script was written.  
+This shell script was written to process Influenza sequences with SmaltAlign:
+* iteration over all `.fastq.gz` files in the current directory
+* create a folder for each sample containing segment1-8 subfolders
+* run `select_ref.py` (written by @ozagordi) which selects the best reference sequence for each segment from a Influenza reference database (selected sequences from the [NCBI Influenza Virus Database]](https://www.ncbi.nlm.nih.gov/genomes/FLU/Database/nph-select.cgi?go=database))
+![IV-A references](References/genomes_query.png)
+* using the best reference sequence to run `smaltalign.sh` for each segment
+* run Rscripts `cov_plot.R` and `wts.R`  
+
 Usage is the same as in batch.sh except that you don't need to enter the filenames.
 
 ### cov_plot.R
