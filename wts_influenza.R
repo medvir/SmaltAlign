@@ -113,7 +113,7 @@ for (i in files) {
     # apply minimal coverage threshold
     comb_data = comb_data %>%
         mutate(WTS = ifelse(is.na(COV), "-", ifelse(COV < minimal_coverage, "N", WTS))) %>%
-        mutate(maj = ifelse(is.na(COV), "-", ifelse(COV < minimal_coverage, "N", WTS)))
+        mutate(maj = ifelse(is.na(COV), "-", ifelse(COV < minimal_coverage, "N", maj)))
     
     # write output files
     write.csv(comb_data, paste0(path, name_i, "_", variant_threshold, ".csv"))
