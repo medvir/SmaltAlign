@@ -34,7 +34,7 @@ for filename in $sample_dir/*.fastq.gz; do
         -i $i $filename
 
         Rscript ${script_dir}/cov_plot.R ./
-        Rscript ${script_dir}/wts.R ./
+        Rscript ${script_dir}/wts_influenza.R ./
         cd ../ ) &
     done
     wait
