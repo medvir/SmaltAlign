@@ -30,7 +30,7 @@ print(c.groupby('segment').head(3))
 
 for segment in range(1, 9):
     counts = c[c['segment'] == segment]
-    if counts.counts.sum() < 1000 or counts.empty:
+    if counts.counts.sum() < 200 or counts.empty:
         print(segment, 'not enough')
         continue
     best_acc = counts.accn.tolist()[0]
