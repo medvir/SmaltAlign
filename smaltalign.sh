@@ -58,27 +58,27 @@ echo -e 'iterations: ' $iterations
 ### loop over list of files to analyse
 if [ -d $sample_dir ]; then list=$(ls $sample_dir | grep .fastq); else list=$sample_dir; fi
 for i in $list; do
-	
+
 	name=$(basename $i | sed 's/_L001_R.*//' | sed 's/.fastq.gz//'| sed 's/.fastq//')
-	
+
 	### sample reads with seqtk
 	seqtk sample $i $n_reads > ${name}_reads.fastq
 	n_sample=$(wc -l ${name}_reads.fastq | cut -f 1 -d " ")
 	n_sample=$(($n_sample / 4))
-	
+
 	### de novo aligment
 	echo
-	echo sample $name, $n_sample reads, de-novo alignment 
+	echo sample $name, $n_sample reads, de-novo alignment
 	echo "*******************************************************************************"
 	velveth ${name} 29 -fastq ${name}_reads.fastq
 	velvetg ${name} -min_contig_lgth 200
-	
+
 	### fake fastq of contigs and cat to reads in triplicate
 	awk '/^>/ {printf("\n%s\n",$0);next; } { printf("%s",$0);}  END {printf("\n");}' < ${name}/contigs.fa | awk 'BEGIN {RS = ">" ; FS = "\n"} NR > 1 {print "@"$1"\n"$2"\n+"$1"\n"gensub(/./, "I", "g", $2)}' > ${name}/contigs.fastq
 	cat ${name}_reads.fastq ${name}/contigs.fastq ${name}/contigs.fastq ${name}/contigs.fastq > ${name}_reads_contigs.fasta
-		
+
 	it=1
-	while [ "$it" -le "$iterations" ]; do		
+	while [ "$it" -le "$iterations" ]; do
 		echo
 		echo sample $name, $n_sample reads, iteration $it
 		if [ -s $ref ]; then
@@ -88,19 +88,19 @@ for i in $list; do
 			echo ERROR: No reference
 			exit
 		fi
-				
+
 		### align with smalt to reference, reads either ${name}_reads.fastq or ${name}_reads_contigs.fasta
 		smalt index -k 7 -s 2 ${name}_${it}_smalt_index $ref
 		samtools faidx $ref
-		
+
 		if [ "$it" -eq 1 ]; then
 			smalt map -n 24 -x -y 0.5 -f samsoft -o ${name}_${it}.sam ${name}_${it}_smalt_index ${name}_reads_contigs.fasta
 		else
 			smalt map -n 24 -x -y 0.5 -f samsoft -o ${name}_${it}.sam ${name}_${it}_smalt_index ${name}_reads.fastq
 		fi
-		
+
 		samtools view -Su ${name}_${it}.sam | samtools sort -o ${name}_${it}.bam
-		samtools index ${name}_${it}.bam	
+		samtools index ${name}_${it}.bam
 
 		### create consensus with freebayes
 		freebayes -f $ref -p 1 ${name}_${it}.bam > ${name}_${it}.vcf
@@ -115,32 +115,32 @@ for i in $list; do
 
 		### create vcf with lofreq
 		rm -f ${name}_${it}_lofreq.vcf
-		
-        if [ "$(uname)" == "Darwin" ]; then 
+
+        if [ "$(uname)" == "Darwin" ]; then
             cores=$(sysctl -n hw.ncpu) ### Mac OS X platform
-        elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then 
+        elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
             cores=$(nproc) ### GNU/Linux platform
-        else 
+        else
             cores=2 ### unkonwn/other platforms
         fi
         cores=$(expr $cores / 2) ### only run on half the cores
         echo =-=-= lofreq with $cores cores =-=-=
         lofreq call-parallel --pp-threads $cores -f $ref -o ${name}_${it}_lofreq.vcf ${name}_${it}.bam
-        	
+
 		### calculate depth
-		samtools depth ${name}_${it}.bam > ${name}_${it}.depth
-	
+		samtools depth -d 1000000 ${name}_${it}.bam > ${name}_${it}.depth
+
 		### remove temporary files of this iteration
 		rm -f ${name}_${it}.sam
 		rm -f ${name}_${it}.vcf
 		rm -f ${name}_${it}_smalt_index.*
 		rm -f ${name}_*_cons.fasta.fai
-		
+
 		### new ref for next iteration
 		ref=${name}_${it}_cons.fasta
 		((it+=1))
     done
-    
+
 	### remove temporary files
 	rm -f ${name}_reads.fastq
 	rm -f ${name}_reads_contigs.fasta
