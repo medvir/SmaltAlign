@@ -7,7 +7,7 @@ script_dir="/analyses/Diagnostics/Repositories/SmaltAlign/"
 sample_dir=$(dirname "$(readlink -f "$0")")
 
 # set SmaltAlign parameters
-n=200000 # number of reads (default 200000)
+n=10000000 # number of reads (default 200000)
 i=4 # iterations (default 4)
 
 source activate SmaltAlign
