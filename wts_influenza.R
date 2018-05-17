@@ -61,13 +61,17 @@ for (i in files) {
     if (class(try(read.table(vcf_file))) == "try-error") {
         vcf_data = data.frame(POS = 1, REF = NA, ALT = NA, DP = NA, AF = NA) # if vcf file is empty
     } else {
-        vcf_data = try(read.table(vcf_file, quote = "\"")) %>%
-            rename(CHROM = V1, POS = V2, ID = V3, REF = V4, ALT = V5, QUAL = V6, FILTER = V7, INFO = V8) %>%
-            separate(INFO, c("DP", "AF", "SB", "DP4"), sep = ";", extra = "drop") %>%
-            select(POS, REF, ALT, DP, AF) %>%
-            mutate(DP = gsub("DP=" ,"", DP)) %>%
-            mutate(AF = round(as.numeric(gsub("AF=" ,"", AF))*100,1)) %>%
-            filter(AF >= variant_threshold) ### filter for AF >= variant_threshold
+        vcf_data = try(read_delim(vcf_file, "\t", escape_double = FALSE, col_names = FALSE,
+                                  col_types = cols(X4 = col_character(),
+                                                   X5 = col_character()),
+                                  comment = "#",
+                                  trim_ws = TRUE)) %>%
+                       rename(CHROM = X1, POS = X2, ID = X3, REF = X4, ALT = X5, QUAL = X6, FILTER = X7, INFO = X8) %>%
+                       separate(INFO, c("DP", "AF", "SB", "DP4"), sep = ";", extra = "drop") %>%
+                       select(POS, REF, ALT, DP, AF) %>%
+                       mutate(DP = gsub("DP=" ,"", DP)) %>%
+                       mutate(AF = round(as.numeric(gsub("AF=" ,"", AF))*100,1)) %>%
+                       filter(AF >= variant_threshold) ### filter for AF >= variant_threshold
     }
     
     cons_data = data.frame(CONS = unlist(strsplit(readLines(cons_file)[-1], ""))) %>%
