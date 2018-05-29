@@ -9,13 +9,13 @@ from Bio import SeqIO
 readfile = sys.argv[1]
 
 allrefs = dict([(s.id.split('_')[0], str(s.seq))
-                for s in SeqIO.parse('/rv_home/stschmu/Repositories/SmaltAlign/References/flugenomes.fasta', 'fasta')])
+                for s in SeqIO.parse('/rv_home/stschmu/Repositories/SmaltAlign/References/flugenomes_nonmixed.fasta', 'fasta')])
 
 # index flugenomes.fasta
-cml = 'bwa index /rv_home/stschmu/Repositories/SmaltAlign/References/flugenomes.fasta'
+cml = 'bwa index /rv_home/stschmu/Repositories/SmaltAlign/References/flugenomes_nonmixed.fasta'
 subprocess.call(cml, shell=True)
 # align against all genomes
-cml = 'bwa mem -t 24 /rv_home/stschmu/Repositories/SmaltAlign/References/flugenomes.fasta %s | samtools view -F 4 > aln.sam' % readfile
+cml = 'bwa mem -t 24 /rv_home/stschmu/Repositories/SmaltAlign/References/flugenomes_nonmixed.fasta %s | samtools view -F 4 > aln.sam' % readfile
 subprocess.call(cml, shell=True)
 # extract accession number, segment, serotype
 cml = 'cut -f 3 aln.sam | cut -d "_" -f 1-3 | tr -d ">" | tr "_" "\t" > ref.tsv'
