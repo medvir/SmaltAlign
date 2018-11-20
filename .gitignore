@@ -7,3 +7,4 @@
 ._wts.R
 References/*.fasta.fai
 ._sampleID_to_filename.xltx
+flugenomes*.fasta.*
