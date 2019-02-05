@@ -1,4 +1,4 @@
-#!/home/schmutz.stefan/miniconda3/envs/SmaltAlign/bin/Rscript
+#!/usr/bin/Rscript
 args <- commandArgs(TRUE)
 
 library(tidyverse)
