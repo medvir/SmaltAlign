@@ -1,4 +1,3 @@
-#!/usr/bin/Rscript
 args <- commandArgs(TRUE)
 
 library(tidyverse)
