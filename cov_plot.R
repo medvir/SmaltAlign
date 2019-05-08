@@ -1,6 +1,9 @@
 args <- commandArgs(TRUE)
 
-library(tidyverse)
+library(readr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
 library(stringr)
 library(cowplot)
 
@@ -12,7 +15,7 @@ files = list.files(path, pattern = "depth")
 data = data.frame()
 
 for (i in files) {
-        
+
         if (file.info(paste0(path, i))$size == 0) {
                 depth_i = c(0) #if depth file is empty
                 names(depth_i) = c(1)
