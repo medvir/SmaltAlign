@@ -117,6 +117,9 @@ for (i in files) {
 
     # apply minimal coverage threshold
     comb_data = comb_data %>%
+        # next mutate() tries and resolve issue of WTS with very high AF
+        mutate(WTS = ifelse(is.na(AF), WTS,
+                            ifelse(AF >= (100-variant_threshold), ALT, WTS))) %>%
         mutate(WTS = ifelse(is.na(COV), "-", ifelse(COV < minimal_coverage, "N", WTS)))
 
     # write output files
