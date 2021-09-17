@@ -8,11 +8,12 @@ library(stringr)
 library(seqinr)
 
 # set path to data (terminal slash is important!)
-#path <- "/Volumes/data/Diagnostics/experiments/170815/"
 path <- paste0(args[1],"/")
+#path <- "~/Documents/SmaltAlign/bug_wts/smalt_zeeb_indel_error_IT4_nbR200000_vTH7_minCov3/"
 
 # minority variant threshold (%)
-variant_threshold <- 15
+variant_threshold <- 15 
+
 
 # minimal coverage required (reads)
 minimal_coverage <- 3
@@ -31,8 +32,11 @@ call_wobbles <- function(nuc_list) {
         unique() %>% .[!is.na(.)] # NAs in nuc_list are ignored (e.g. if position not covered, returns NA)
 
     for (i in 1:length(nuc_list)) {
-        if (nchar(nuc_list[i]) > 1) {return("insertion")} # returns "insertion" if nuc_list not composed of single characters
-        if (!(is.element(nuc_list[i], c("A", "G", "C", "T", "N")))) {return("unkown_nucleotide")} # returns "unkown_nucleotide" if characters other than A, G, C, T, N in nuc_list
+        # In smaltalign lofreq does not call indels so in the lofreq vcf file there should not be any indels
+        if (nchar(nuc_list[i]) > 1){
+          if(grepl('/',nuc_list[i] )) {return("N")} # returns "insertion" error if nuc_list not composed of single characters and has no "/" char
+          else{stop("unexpected insertion")}}# returns "insertion" error if nuc_list not composed of single characters and has no "/" char
+        if (!(is.element(nuc_list[i], c("A", "G", "C", "T", "N")))) {stop("unkown_nucleotide")} # {return("unkown_nucleotide")} # returns "unkown_nucleotide" error if characters other than A, G, C, T, N in nuc_list
     }
 
     if (length(nuc_list) == 0) {return(NA)}
@@ -63,7 +67,7 @@ for (i in files) {
     if (class(try(read.table(vcf_file))) == "try-error") {
         vcf_data = data.frame(POS = 1, REF = NA, ALT = NA, DP = NA, AF = NA) # if vcf file is empty
     } else {
-      vcf_data = try(read_delim(vcf_file, "\t", escape_double = FALSE, col_names = FALSE,
+        vcf_data = try(read_delim(vcf_file, "\t", escape_double = FALSE, col_names = FALSE,
                                 col_types = cols(X4 = col_character(),
                                                  X5 = col_character()),
                                 comment = "#",
@@ -98,13 +102,21 @@ for (i in files) {
 
     ### call wobbles
     comb_data <- comb_data %>%
-        mutate(REF = ifelse(is.na(REF), CONS,       ### use CONS when REF is NA
-                            ifelse(REF == CONS, REF,       ### use REF (or CONS) if REF and CONS are identical
-                                   ifelse(abs(AF - 50) <= 15, REF,  ### use REF although CONS is different when similar frequency
-                                          "error")))) %>%                ### else "error"
+        mutate(REF = ifelse(is.na(REF), CONS, REF))  %>%       ### use CONS when REF is NA otherwise use REF
         mutate(WTS = apply(.[,c('REF', 'ALT')], 1, function(x) call_wobbles(c(x['REF'], x['ALT'])))) %>%
         select(POS, REF, ALT, AF, COV, WTS)
 
+    ### resolve triplet lines in vcf_data for three variants 
+    ### (happens more when the variant threshold is set lower than 15%)
+    for (j in nrow(comb_data):3) {
+      if (comb_data$POS[j] == comb_data$POS[j - 1] & comb_data$POS[j] == comb_data$POS[j - 2]) {
+        comb_data$WTS[j - 2] = call_wobbles(c(comb_data$REF[j], comb_data$REF[j - 1], comb_data$REF[j - 2], comb_data$ALT[j], comb_data$ALT[j - 1], comb_data$ALT[j - 2]))
+        comb_data$AF[j - 2] = paste(comb_data$AF[j], comb_data$AF[j - 1], comb_data$AF[j - 2], sep = "/")
+        comb_data$ALT[j - 2] = paste(comb_data$ALT[j], comb_data$ALT[j - 1], comb_data$ALT[j - 2], sep = "/")
+        comb_data = comb_data[-j : -(j-1), ]
+      }
+    }
+    
     ### resolve duplicate lines in vcf_data for two variants
     for (j in nrow(comb_data):2) {
         if (comb_data$POS[j] == comb_data$POS[j - 1]) {
@@ -123,3 +135,4 @@ for (i in files) {
     write.csv(comb_data, paste0(path, name_i,  "_", variant_threshold, ".csv"))
     write.fasta(paste(comb_data$WTS, collapse = ""), name_i, paste0(path, name_i, "_", variant_threshold, "_WTS.fasta"), open = "w", nbchar = 60)
 }
+
