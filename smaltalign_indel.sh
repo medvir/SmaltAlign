@@ -146,6 +146,7 @@ for i in $list; do
             cores=2 ### unkonwn/other platforms
         fi
         cores=$(expr $cores / 2) ### only run on half the cores
+		cores="${cores/0/1}"
         echo =-=-= lofreq with $cores cores =-=-=
 		
 		lofreq call-parallel --pp-threads $cores -f $ref -o ${name}_${it}_lofreq.vcf ${name}_${it}.bam
