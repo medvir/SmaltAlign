@@ -65,7 +65,7 @@ python construct_consensus.py -c variants_lofreq.vcf -r closest_consensus_sequen
     help='A distant reference sequence if positioning based on it is needed in the output file.')
     parser.add_argument(
     '--threshold', '-t', metavar='THRESHOLD', type=float,
-    help='variant threshold to construct consensus sequence, default is 15%.')
+    help='variant threshold to construct consensus sequence, default is 15%%.')
     parser.add_argument(
     '--min_coverage', '-m', metavar='MINCOV', type=int,
     help='minimum coverage to call variants.')
