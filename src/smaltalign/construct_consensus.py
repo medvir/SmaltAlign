@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 @status: development
-@author: maryamzaheri
 """
 
 import argparse

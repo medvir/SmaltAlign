@@ -10,8 +10,8 @@ setup(
     name='SmaltAlign',
     description='Calling consensus sequence',
     url='https://github.com/medvir/SmaltAlign',
-    author='Maryam Zaheri',
-    author_email='lastname@gmail.com',
+    author='Maryam Zaheri, Stefan Schmutz, Michael Huber',
+    author_email='zaheri@gmail.com, stefan.schmutz@uzh.ch, huber.michael@virology.uzh.ch',
     license='MIT',
     packages=find_packages('src'),  # include all packages under src
     package_dir={'': 'src'},  # tell setuptools packages are under src

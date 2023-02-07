@@ -5,7 +5,6 @@ For each fastq file in the input directory a new sample directory is created (ba
 and all the results are stored in the corresponding directory.
 By default the result directories are stored in the input dir unless the output_dir is given.
 @status: development
-@author: maryamzaheri
 """
 import sys
 import os

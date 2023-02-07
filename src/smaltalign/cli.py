@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 @status: development
-@author: maryamzaheri
 
 """
 
@@ -33,42 +32,41 @@ smaltalign -d '../../../py_script_test' -r references/SARS_CoV_2_2.fasta
 """)
 
 #dest="f",
-parser.add_argument("--fastq_dir", "-d", type=str, required=True,
+parser.add_argument("--fastq_dir", "-d", type=str, required=True,  
     help="directory that has raw fastq files, A unique identifier from each fastq\n\
 filename will be selected and the directory and all\n\
 files generated from this file will have this identifier.\n\
 If filename include 'XXX_L001_R*' then XXX will be the unique identifier\n\
 else the name of the file before first '.' will be the unique identifier")
 
-#metavar='REFERENCE'
-parser.add_argument('--ref', '-r', type=str, required=True,
+parser.add_argument('--ref', '-r', type=str, required=True, 
                     help='A close reference sequence or a close consensus\n\
 sequence obtained iteratively using smaltalign.')
-#metavar='PREFIX',
-parser.add_argument('--output_dir', '-o',  type=str, default=None, 
+
+parser.add_argument('--output_dir', '-o',  type=str, default=None, metavar='', 
                     help='The directory that will have all the results.\n\
 If does not exist it will be created, if not given the input directory is used.')
 
-#metavar='READS_NUMBER',
-parser.add_argument('--reads_number', '-n', type=int, default=200000,
+
+parser.add_argument('--reads_number', '-n', type=int, default=200000, metavar='', 
                     help='Subsample sequences. For no subsampling set this parameter to -1')
 
-#metavar='ITERATIONS', 
-parser.add_argument('--iterations', '-i', type=int, default=4 ,
+
+parser.add_argument('--iterations', '-i', type=int, default=4 , metavar='', 
                     help='Number of iterations the variants are called to construct the consensus sequence.\n\
 For heighly mutated viruses it can be up to 4 and for viruses with\n\
 low mutation rates such as SARS-CoV-2 it can be 2.')
 
-#metavar='THRESHOLD',
-parser.add_argument('--threshold', '-t',  type=float, default=15, 
+
+parser.add_argument('--threshold', '-t',  type=float, default=15, metavar='', 
                     help='variant threshold to construct consensus sequence, default is 15%%.')
 
-#metavar='MINCOV',
-parser.add_argument('--min_coverage', '-c',  type=int, default=3, 
+
+parser.add_argument('--min_coverage', '-c',  type=int, default=3, metavar='', 
                     help='minimum coverage to call variants in the final iteration.')
 
-#metavar='DISTREFERENCE',
-parser.add_argument('--distant_ref', '-f',  type=str, default=None, 
+
+parser.add_argument('--distant_ref', '-f',  type=str, default=None, metavar='', 
                     help='A distant reference sequence if positioning based on it is needed in the output file.')
 
 parser.add_argument('-v', '--version', action='version',
