@@ -24,9 +24,8 @@ def run_child(cmd, exe='/bin/bash'):
     logging.info(cmd)
     try:
         output = subprocess.check_output(cmd, universal_newlines=True, shell=True, stderr=subprocess.STDOUT)
-    
     except subprocess.CalledProcessError as ee:
-        err_msg = 'error in %s \n output is %s \n' %(ee, output)
+        err_msg = 'error: %s \n ' %(ee)
         logging.error(err_msg)
         output = None
     return output
@@ -44,11 +43,10 @@ def main(input_path, reference_file, output_dir=None, default_reads=200000,
         file_path = os.path.join(dir_path, f_ext)
         all_input_files.extend(glob.glob(file_path))
     
-    ref_iterative_file = os.path.abspath(reference_file)
-    
-    
     for input_file in all_input_files:
         
+        ref_iterative_file = os.path.abspath(reference_file)
+
         if '_L001_R' in input_file:
             name = os.path.basename(input_file).split('_L001_R')[0]
         else:
@@ -72,17 +70,24 @@ def main(input_path, reference_file, output_dir=None, default_reads=200000,
             
         # seqtk subsample the reads
         path_name_prefix = os.path.join(path_name,name)
+
+        #subsample_file = input_file
+        subsample_file = '%s_reads.fastq' %path_name_prefix
         if default_reads != -1:
-            subsample_fastq_cmd = 'seqtk sample %s %i > %s_reads.fastq ' %(input_file, default_reads, path_name_prefix)
+            subsample_fastq_cmd = 'seqtk sample %s %i > %s ' %(input_file, default_reads, subsample_file)
             run_child(subsample_fastq_cmd)
-        
+        else:
+            cmd = 'gunzip -c %s > %s' %(input_file, subsample_file)
+            #subprocess.call(cmd, shell=True)
+            run_child(cmd)
+            
         n_reads = 0 
-        wc_fastq_cmd = 'wc -l %s_reads.fastq' %(path_name_prefix)
+        wc_fastq_cmd = 'wc -l %s' %(subsample_file)
         out = run_child(wc_fastq_cmd)
         n_reads = int(out.split()[0])//4
         
         # call velvet for assembly 
-        velveth_cmd = 'velveth %s %d -fastq %s_reads.fastq' %(path_name_prefix, velvet_kmer, path_name_prefix )
+        velveth_cmd = 'velveth %s %d -fastq %s' %(path_name_prefix, velvet_kmer, subsample_file )
         run_child(velveth_cmd)
         
         velvetg_cmd = 'velvetg %s -min_contig_lgth %s' %(path_name_prefix, str(min_contig_lgth))
@@ -95,11 +100,11 @@ def main(input_path, reference_file, output_dir=None, default_reads=200000,
         run_child(convert_fa_fq_cmd)
         
         # concat contig.fastq file to the reads file in triplicate
-        cat_cmd = 'cat %s_reads.fastq %s %s %s > %s_reads_contigs.fasta' %(path_name_prefix, 
-                                                                           contig_fastq_path_name, 
-                                                                           contig_fastq_path_name, 
-                                                                           contig_fastq_path_name, 
-                                                                           path_name_prefix)
+        cat_cmd = 'cat %s %s %s %s > %s_reads_contigs.fasta' %(subsample_file, 
+                                                                contig_fastq_path_name, 
+                                                                contig_fastq_path_name, 
+                                                                contig_fastq_path_name, 
+                                                                path_name_prefix)
         run_child(cat_cmd)
         
         # for n iteration
@@ -127,8 +132,8 @@ def main(input_path, reference_file, output_dir=None, default_reads=200000,
             else: 
                 smalt_align_cmd = 'smalt map -n 24 -x -y 0.5 -f samsoft '
                 smalt_align_cmd += '-o %s_%d.sam ' %(path_name_prefix, i)
-                smalt_align_cmd += '%s_%d_smalt_index %s_reads.fastq' %(path_name_prefix, 
-                                                                        i, path_name_prefix)
+                smalt_align_cmd += '%s_%d_smalt_index %s' %(path_name_prefix, 
+                                                            i, subsample_file)
             
             run_child(smalt_align_cmd)
             
@@ -202,12 +207,16 @@ def main(input_path, reference_file, output_dir=None, default_reads=200000,
             
             ref_iterative_file = dst_file
         
-        os.remove('%s_reads.fastq' %(path_name_prefix))
+        os.remove('%s' %(subsample_file)) 
         os.remove('%s_reads_contigs.fasta' %(path_name_prefix))
         shutil.rmtree(path_name_prefix)
         
         from smaltalign import construct_consensus
         #main(ref_file, lofreq_vcf_file, depth_file, output_file_str=None, VARIANT_TH=15, MINIMAL_COVERAGE=3, distant_ref=None):
+        consensus_params_str = 'call consensus , reference file %s, variant_file %s, depth file %s, path_name_prefix %s, variant_th %s, minimum coverage %d, distant reference %s' %(
+                                ref_iterative_file, lofreq_vcf_file, depth_file, path_name_prefix, variant_th, min_cov, distant_ref)
+        #print(print_str)
+        logging.info(consensus_params_str)
         construct_consensus.main(ref_iterative_file, lofreq_vcf_file, depth_file, 
                                  path_name_prefix, variant_th, min_cov, distant_ref)
         

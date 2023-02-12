@@ -32,6 +32,7 @@ wobbles = {v: k for k, v in d2a.items()}
 def main(ref_file, lofreq_vcf_file, depth_file, output_file_str=None, VARIANT_TH=15, MINIMAL_COVERAGE=3, distant_ref=None):
 
     # read vcf file (from smaltalign lofreq output) 
+    print('main function construct consensus')
     if not output_file_str:
         output_file_str = lofreq_vcf_file.split('_lofreq')[0] #lofreq_vcf_file.split('%d_lofreq' %max_itr)[0]
     
@@ -59,23 +60,16 @@ def main(ref_file, lofreq_vcf_file, depth_file, output_file_str=None, VARIANT_TH
     vcf_pos_grouped_pd = vcf_pd.groupby(vcf_pd['POS']).aggregate(aggregation_functions).reset_index()
     
     # read the closest consensus sequence  (smaltalign freebayes + vcf2fasta output from the last iteration) 
-    try:
-        cons_str_pd = pd.read_csv(ref_file, names=['ref_cons'], header=0)
-    except FileNotFoundError:
-        logging.error( '%s file not found' %ref_file)
-    
-    cons_pd = cons_str_pd.assign(ref_cons=cons_str_pd.ref_cons.str.split('')).explode('ref_cons', ignore_index=True).replace('', np.nan)
-    cons_pd.dropna(subset = ['ref_cons'], inplace=True)
-    cons_pd.reset_index(drop=True, inplace=True)
-    cons_pd = cons_pd.rename_axis('POS').reset_index()
-    cons_pd['POS'] += 1 
-    
+    ref_seq = list(SeqIO.parse(ref_file, 'fasta'))[0]
+    ref_pos_ls = [i+1 for i in range(len(ref_seq))]
+    cons_pd = pd.DataFrame({'POS': ref_pos_ls, 'ref_cons': list(ref_seq)})
+
     # merge the consensus nucleotide, positions with vcf information
     cons_vcf_pd = pd.merge(cons_pd, vcf_pos_grouped_pd, on='POS', how="outer")
-    cons_vcf_pd['REF'] = cons_vcf_pd['REF'].str.upper()  #['REF', 'ALT', 'ref_cons']
-    cons_vcf_pd['ALT'] = cons_vcf_pd['ALT'].str.upper()
-    cons_vcf_pd['ref_cons'] = cons_vcf_pd['ref_cons'].str.upper()
-    
+    cons_vcf_pd['REF'] = cons_vcf_pd[cons_vcf_pd['REF'].notnull()]['REF'].str.upper()  #['REF', 'ALT', 'ref_cons']
+    cons_vcf_pd['ALT'] = cons_vcf_pd[cons_vcf_pd['ALT'].notnull()]['ALT'].astype(str).str.upper()
+    cons_vcf_pd['ref_cons'] = cons_vcf_pd[cons_vcf_pd['ref_cons'].notnull()]['ref_cons'].str.upper()
+
     # read depth file (from smaltalign samtools output) 
     columns = ['ref','POS','COV']
     try:
@@ -116,7 +110,7 @@ def main(ref_file, lofreq_vcf_file, depth_file, output_file_str=None, VARIANT_TH
         if not pd.isna(row['ALT']):
             ALT_ls = row['ALT'].split(',')
             nuc_ls += ALT_ls 
-            AF_ls = [float(i) for i in row['AF'].split(',')]
+            AF_ls = [float(i) for i in str(row['AF']).split(',')]
             assert len(ALT_ls) == len(AF_ls), logging.error("number of alleles are different from number of allele frequencies in position %d."  %(cur_pos))
             
             NCs_AF_dict = {}
@@ -158,7 +152,7 @@ def main(ref_file, lofreq_vcf_file, depth_file, output_file_str=None, VARIANT_TH
     cons_vcf_depth_pd['WTS'] = cons_vcf_depth_pd['POS'].map(wobbles_dict)
     cons_vcf_depth_pd.drop(['DP', 'REF'] , axis=1, inplace=True)
     
-    o_filename = output_file_str + '_th%d_final.csv'%VARIANT_TH
+    o_filename = output_file_str + '_th%d.csv'%VARIANT_TH
     cons_vcf_depth_pd.to_csv(o_filename, index=False)
     
     amb_cons_seq = ''.join(cons_vcf_depth_pd["WTS"].fillna(''))
@@ -169,7 +163,7 @@ def main(ref_file, lofreq_vcf_file, depth_file, output_file_str=None, VARIANT_TH
         description='',
     )
     
-    final_cons_file_name = output_file_str + '_th%d_cons.fasta'%VARIANT_TH
+    final_cons_file_name = output_file_str + '_th%d_WTS.fasta'%VARIANT_TH
     output_handle = open(final_cons_file_name, "w")
     fasta_out = FastaIO.FastaWriter(output_handle, wrap=None)
     fasta_out.write_record(amb_record)

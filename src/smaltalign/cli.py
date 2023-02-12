@@ -49,13 +49,13 @@ If does not exist it will be created, if not given the input directory is used.'
 
 
 parser.add_argument('--reads_number', '-n', type=int, default=200000, metavar='', 
-                    help='Subsample sequences. For no subsampling set this parameter to -1')
+                    help='Subsample sequences. For no subsampling set this parameter to -1, default is 200,000')
 
 
 parser.add_argument('--iterations', '-i', type=int, default=4 , metavar='', 
                     help='Number of iterations the variants are called to construct the consensus sequence.\n\
 For heighly mutated viruses it can be up to 4 and for viruses with\n\
-low mutation rates such as SARS-CoV-2 it can be 2.')
+low mutation rates such as SARS-CoV-2 it can be 2, default is 4.')
 
 
 parser.add_argument('--threshold', '-t',  type=float, default=15, metavar='', 
@@ -63,7 +63,7 @@ parser.add_argument('--threshold', '-t',  type=float, default=15, metavar='',
 
 
 parser.add_argument('--min_coverage', '-c',  type=int, default=3, metavar='', 
-                    help='minimum coverage to call variants in the final iteration.')
+                    help='minimum coverage to call variants in the final iteration, default is 3.')
 
 
 parser.add_argument('--distant_ref', '-f',  type=str, default=None, metavar='', 
