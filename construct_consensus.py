@@ -150,16 +150,20 @@ def construct_consensus(ref_file, lofreq_vcf_file, depth_file, VARIANT_TH, MINIM
     vcf_pos_grouped_pd = vcf_pd.groupby(vcf_pd['POS']).aggregate(aggregation_functions).reset_index()
     
     # read the closest consensus sequence  (smaltalign freebayes + vcf2fasta output from the last iteration) 
-    try:
-        cons_str_pd = pd.read_csv(ref_file, names=['ref_cons'], header=0)
-    except FileNotFoundError:
-        logging.error( '%s file not found' %ref_file)
+    #try:
+    #    cons_str_pd = pd.read_csv(ref_file, names=['ref_cons'], header=0)
+    #except FileNotFoundError:
+    #    logging.error( '%s file not found' %ref_file)
     
-    cons_pd = cons_str_pd.assign(ref_cons=cons_str_pd.ref_cons.str.split('')).explode('ref_cons', ignore_index=True).replace('', np.nan)
-    cons_pd.dropna(subset = ['ref_cons'], inplace=True)
-    cons_pd.reset_index(drop=True, inplace=True)
-    cons_pd = cons_pd.rename_axis('POS').reset_index()
-    cons_pd['POS'] += 1 
+    #cons_pd = cons_str_pd.assign(ref_cons=cons_str_pd.ref_cons.str.split('')).explode('ref_cons', ignore_index=True).replace('', np.nan)
+    ref_seq = list(SeqIO.parse(ref_file, 'fasta'))[0]
+    ref_pos_ls = [i+1 for i in range(len(ref_seq))]
+    cons_pd = pd.DataFrame({'pos': ref_pos_ls, 'ref_cons': list(ref_seq)})
+
+    #cons_pd.dropna(subset = ['ref_cons'], inplace=True)
+    #cons_pd.reset_index(drop=True, inplace=True)
+    #cons_pd = cons_pd.rename_axis('POS').reset_index()
+    #cons_pd['POS'] += 1 
     
     # merge the consensus nucleotide, positions with vcf information
     cons_vcf_pd = pd.merge(cons_pd, vcf_pos_grouped_pd, on='POS', how="outer")

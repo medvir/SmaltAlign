@@ -32,7 +32,6 @@ wobbles = {v: k for k, v in d2a.items()}
 def main(ref_file, lofreq_vcf_file, depth_file, output_file_str=None, VARIANT_TH=15, MINIMAL_COVERAGE=3, distant_ref=None):
 
     # read vcf file (from smaltalign lofreq output) 
-    print('main function construct consensus')
     if not output_file_str:
         output_file_str = lofreq_vcf_file.split('_lofreq')[0] #lofreq_vcf_file.split('%d_lofreq' %max_itr)[0]
     

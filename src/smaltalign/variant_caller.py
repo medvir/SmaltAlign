@@ -24,16 +24,24 @@ def run_child(cmd, exe='/bin/bash'):
     logging.info(cmd)
     try:
         output = subprocess.check_output(cmd, universal_newlines=True, shell=True, stderr=subprocess.STDOUT)
+    
     except subprocess.CalledProcessError as ee:
-        err_msg = 'error: %s \n ' %(ee)
+        err_msg = 'error is %s \n' %(ee)
         logging.error(err_msg)
         output = None
     return output
 
-
-def main(input_path, reference_file, output_dir=None, default_reads=200000, 
-         iterations=ITR, variant_th=15, min_cov=3, distant_ref=None):
+def Quality_Control(input_file, path_name, min_qual_mean = 20):
     
+    filtered_prefix = '%s_filtered' %path_name 
+    filter_cmd = 'prinseq -fastq %s -min_qual_mean %d -log %s_prinseq.log \
+    -out_good %s -out_bad %s_bad > %s_prinseq.err 2>&1' %(input_file, min_qual_mean, path_name, filtered_prefix, filtered_prefix, path_name)
+    run_child(filter_cmd)
+    #filtered_filename = filtered_prefix + '.fastq'
+    return filtered_prefix
+    
+def main(input_path, reference_file, output_dir=None, default_reads=200000, 
+         iterations=ITR, variant_th=15, min_cov=3, distant_ref=None, QC=False, min_qual_mean=20):
     
     # extract the base name
     dir_path = os.path.abspath(input_path)
@@ -44,9 +52,9 @@ def main(input_path, reference_file, output_dir=None, default_reads=200000,
         all_input_files.extend(glob.glob(file_path))
     
     for input_file in all_input_files:
-        
-        ref_iterative_file = os.path.abspath(reference_file)
 
+        ref_iterative_file = os.path.abspath(reference_file)
+        
         if '_L001_R' in input_file:
             name = os.path.basename(input_file).split('_L001_R')[0]
         else:
@@ -67,19 +75,28 @@ def main(input_path, reference_file, output_dir=None, default_reads=200000,
         except OSError as error:
             logging.error(error)
             continue
+        
+        if input_file.endswith('gz'):
+            cmd_gz = 'gzip -d %s' %input_file
+            run_child(cmd_gz)
+            input_file = input_file.rstrip('.gz')
+        
+        reads_file = input_file
+        path_name_prefix = os.path.join(path_name,name)
+        if QC:
+            logging.debug('filtering with prinseq')
+            # can be added: -lc_method entropy -lc_threshold 70
+            # -min_qual_mean 25
+            filtered_prefix = Quality_Control(input_file, path_name_prefix, min_qual_mean)
+            reads_file = '%s.fastq' %filtered_prefix
             
         # seqtk subsample the reads
-        path_name_prefix = os.path.join(path_name,name)
-
-        #subsample_file = input_file
         subsample_file = '%s_reads.fastq' %path_name_prefix
         if default_reads != -1:
-            subsample_fastq_cmd = 'seqtk sample %s %i > %s ' %(input_file, default_reads, subsample_file)
+            subsample_fastq_cmd = 'seqtk sample %s %i > %s ' %(reads_file, default_reads, subsample_file)
             run_child(subsample_fastq_cmd)
         else:
-            cmd = 'gunzip -c %s > %s' %(input_file, subsample_file)
-            #subprocess.call(cmd, shell=True)
-            run_child(cmd)
+            shutil.copy(reads_file, '%s' %subsample_file )
             
         n_reads = 0 
         wc_fastq_cmd = 'wc -l %s' %(subsample_file)
@@ -100,14 +117,13 @@ def main(input_path, reference_file, output_dir=None, default_reads=200000,
         run_child(convert_fa_fq_cmd)
         
         # concat contig.fastq file to the reads file in triplicate
-        cat_cmd = 'cat %s %s %s %s > %s_reads_contigs.fasta' %(subsample_file, 
+        cat_cmd = 'cat %s %s %s %s > %s_reads_contigs.fasta' %(subsample_file,  
                                                                 contig_fastq_path_name, 
                                                                 contig_fastq_path_name, 
                                                                 contig_fastq_path_name, 
                                                                 path_name_prefix)
         run_child(cat_cmd)
         
-        # for n iteration
         for i in range(1,iterations+1):
             
             #sample $name, $n_sample reads, iteration $it
@@ -184,13 +200,37 @@ def main(input_path, reference_file, output_dir=None, default_reads=200000,
             lofreq_call_cmd += ' %s_%d.bam' %(path_name_prefix, i)
             run_child(lofreq_call_cmd)
             
-            #***** ADD STEP
             ## run commands to extract indels
+            samtools_sort_bam_cmd = 'samtools sort %s_%d.bam -o %s_%d_sorted.bam'  %(path_name_prefix, i, 
+                                                                                     path_name_prefix, i)
+            run_child(samtools_sort_bam_cmd)
             
+            lofreq_indelqual_file = 'lofreq indelqual --dindel -f %s %s_%d_sorted.bam  -o %s_%d_indel.bam' %(ref_iterative_file, 
+                                                                                                             path_name_prefix, i, 
+                                                                                                             path_name_prefix, i)
+            run_child(lofreq_indelqual_file)
             
+            samtools_ind_cmd = 'samtools index -b %s_%d_indel.bam' %(path_name_prefix, i)
+            run_child(samtools_ind_cmd)
+            
+            lofreq_indel_file = 'lofreq call-parallel --pp-threads %d --call-indels -f %s -o %s_%d_lofreq_indel.vcf %s_%d_indel.bam' %(cpu_num, 
+                                                                                                                                       ref_iterative_file, 
+                                                                                                                                       path_name_prefix, i, 
+                                                                                                                                       path_name_prefix, i)
+            run_child(lofreq_indel_file)
+            
+            indels_grep_cmd = 'grep -c -v "^#" %s_%d_lofreq_indel.vcf'  %(path_name_prefix, i)
+            out = run_child(indels_grep_cmd)
+            indels = int(out.split()[0])
+            if indels > 0:
+                lofreq_filter_cmd = 'lofreq filter --only-indels -a 0.15 -v 10 --indelqual-thresh 20 -i %s_%d_lofreq_indel.vcf -o %s_%d_lofreq_indel_hq.vcf' %(path_name_prefix, i, 
+                                                                                                                                                               path_name_prefix, i)
+                run_child(lofreq_filter_cmd)
+                logging.info('lofreq indel filter is done with %s' %lofreq_filter_cmd)
+                
             #calculate depth for the covplot 
             depth_file = '%s_%d.depth' %(path_name_prefix, i)
-            samtools_depth_cmd = 'samtools depth -d 1000000 %s_%d.bam '  %(path_name_prefix, i)
+            samtools_depth_cmd = 'samtools depth -d 1000000 %s_%d.bam ' %(path_name_prefix, i)
             samtools_depth_cmd += '> %s'  %(depth_file)
             run_child(samtools_depth_cmd)
             
