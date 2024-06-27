@@ -33,15 +33,17 @@ To install the classic `python setup.py install` or `pip install .` will work.
     smaltalign -d <fastq_file_directory> -r <reference_file> [options] 
 
 ## bash script
-`smaltalign.sh` is the main script. 
+If you would like to run the bash script, `smaltalign_select_ref.sh` is the main script. If you are not sure about the closest reference sequence and you would like the script to choose the closest reference sequence from several suggested reference sequences, run `smaltalign_select_ref.sh` with all the reference sequences in one fasta reference_file. 
 
 ##### Usage
-	smaltalign.sh -r <reference_file> [options] <fastq_file/directory>
+	smaltalign_select_ref.sh -r <reference_file> [options] <fastq_file/directory>
 
 	OPTIONS
-	-r       reference
+	-r       reference_file
 	-n INT   number of reads (default 200'000)
 	-i INT   iterations (default 4)
+
+
 
 ##### batch.sh
 Used to run multiple samples in the current working directory with different references in one batch.  
