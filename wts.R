@@ -14,7 +14,6 @@ path <- paste0(args[1],"/")
 # minority variant threshold (%)
 variant_threshold <- 15
 
-
 # minimal coverage required (reads)
 minimal_coverage <- 3
 
@@ -31,10 +30,10 @@ call_wobbles <- function(nuc_list) {
         toupper() %>%
         unique() %>% .[!is.na(.)] # NAs in nuc_list are ignored (e.g. if position not covered, returns NA)
 
+    if (is.na(nuc_list[1]) & is.na(nuc_list[2])){return("N")}
     for (i in 1:length(nuc_list)) {
-        # In smaltalign lofreq does not call indels so in the lofreq vcf file there should not be any indels
-        if (nchar(nuc_list[i]) > 1) {stop("unexpected insertion")} # returns "insertion" error if nuc_list not composed of single characters
-        if (!(is.element(nuc_list[i], c("A", "G", "C", "T", "N")))) {stop("unkown_nucleotide")} # {return("unkown_nucleotide")} # returns "unkown_nucleotide" error if characters other than A, G, C, T, N in nuc_list
+        if (nchar(nuc_list[i]) > 1) {return("insertion")} # returns "insertion" if nuc_list not composed of single characters
+        if (!(is.element(nuc_list[i], c("A", "G", "C", "T", "N")))) {return("unkown_nucleotide")} # returns "unkown_nucleotide" if characters other than A, G, C, T, N in nuc_list
     }
 
     if (length(nuc_list) == 0) {return(NA)}
@@ -100,7 +99,10 @@ for (i in files) {
 
     ### call wobbles
     comb_data <- comb_data %>%
-        mutate(REF = ifelse(is.na(REF), CONS, REF))  %>%       ### use CONS when REF is NA otherwise use REF
+        mutate(REF = ifelse(is.na(REF), CONS,       ### use CONS when REF is NA
+                            ifelse(REF == CONS, REF,       ### use REF (or CONS) if REF and CONS are identical
+                                   ifelse(abs(AF - 50) <= 15, REF,  ### use REF although CONS is different when similar frequency
+                                          "error")))) %>%                ### else "error"
         mutate(WTS = apply(.[,c('REF', 'ALT')], 1, function(x) call_wobbles(c(x['REF'], x['ALT'])))) %>%
         select(POS, REF, ALT, AF, COV, WTS)
 
