@@ -23,8 +23,8 @@ All the necessary references are in the References directory.
 #### Use conda environment from file
 To ensure you have all dependencies needed for SmaltAlign installed you can use the `environment.yml` file.  
 First you need to have [Conda](https://conda.io/docs/install/quick.html) installed).  
-With the command `conda env create -f <path>/environment.yml` you will create a copy of the SmaltAlign environment.  
-You enter the environment with the command `conda activate SmaltAlign` (and leave it with `conda deactivate`).  
+With the command `conda env create -f <path>/environment.yml` you will create a copy of the smaltalign environment.  
+You enter the environment with the command `conda activate smaltalign` (and leave it with `conda deactivate`).  
 For more information visit following link to [Managing environments](https://conda.io/docs/using/envs.html).
 
 ## python package 
@@ -60,7 +60,7 @@ To analyse the results of a Diagnostic sequencing run following steps need to be
 * in that new folder create links to the .fastq files you want to analyse (`ln -sv`) and copy the `SampleSheet.csv` of that run
 * copy the `batch.sh` file into that new folder
 * add the filenames (you can use `sampleID_to_filename.xltx`) to the empty virus arrays in `batch.sh` separated by a new line (works if you copy from the excel file)
-* activate SmaltAlign environment (`source activate SmaltAlign`)
+* activate SmaltAlign environment (`source activate smaltalign`)
 * execute `./batch.sh`
 
 ##### batch_influenza.sh
