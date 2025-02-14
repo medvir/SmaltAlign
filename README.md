@@ -33,25 +33,18 @@ To install the classic `python setup.py install` or `pip install .` will work.
     smaltalign -d <fastq_file_directory> -r <reference_file> [options] 
 
 ## bash script
-If you would like to run the bash script and you are not sure about the closest reference sequence, run `smaltalign_select_ref.sh` with a set of probable reference sequences in `<reference_file>` file in fasta format. It chooses the closest reference sequence from the set of given reference sequences and construct the consensus sequence using the chosen reference sequence.  
+If you would like to run the bash script and you are not sure about the closest reference sequence, run `smaltalign.sh` with a set of probable reference sequences in `<reference_file>` file in fasta format. It chooses the closest reference sequence from the set of given reference sequences and construct the consensus sequence using the chosen reference sequence.  
 
 
 ##### Usage
-	smaltalign_select_ref.sh -r <reference_file> [options] <fastq_file/directory>
+	smaltalign.sh -r <reference_file> [options] <fastq_file/directory>
 
 	OPTIONS
-	-r       reference_file 
+	-r       reference_file (containing one or more reference sequences)
 	-n INT   number of reads (default 200'000)
 	-i INT   iterations (default 4)
 
 If you would like to give one reference sequence in the `<reference_file>`, one can run `smaltalign.sh`.  \
-##### Usage
-    smaltalign.sh -r <reference_file> [options] <fastq_file/directory>
-    OPTIONS
-	-r       reference_file (only one reference sequence)
-	-n INT   number of reads (default 200'000)
-	-i INT   iterations (default 4)
-
 
 ##### batch.sh
 Used to run multiple samples in the current working directory with different references in one batch.  

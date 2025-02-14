@@ -13,6 +13,7 @@ import logging
 import shutil
 import glob
 
+from smaltalign import construct_consensus
 
 ITR = 4
 velvet_kmer = 29
@@ -251,7 +252,6 @@ def main(input_path, reference_file, output_dir=None, default_reads=200000,
         os.remove('%s_reads_contigs.fasta' %(path_name_prefix))
         shutil.rmtree(path_name_prefix)
         
-        from smaltalign import construct_consensus
         #main(ref_file, lofreq_vcf_file, depth_file, output_file_str=None, VARIANT_TH=15, MINIMAL_COVERAGE=3, distant_ref=None):
         consensus_params_str = 'call consensus , reference file %s, variant_file %s, depth file %s, path_name_prefix %s, variant_th %s, minimum coverage %d, distant reference %s' %(
                                 ref_iterative_file, lofreq_vcf_file, depth_file, path_name_prefix, variant_th, min_cov, distant_ref)

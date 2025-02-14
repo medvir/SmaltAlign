@@ -1,51 +1,97 @@
 #!/bin/bash
 
-### defaults
-script_dir=$( dirname "$(readlink -f "$0")" )
-n_reads=200000
-iterations=4
+set -e
 
-### arguments
-if [ $# == 0 ]; then
-	echo
-	echo 'Usage: smaltalign.sh -r <reference_file> [options] <fastq_file/directory> '
-	echo 'Options:'
-	echo '  -r       reference'
-	echo '  -n INT   number of reads (default 200000)'
-	echo '  -i INT   iterations (default 4)'
-	echo
-	exit
-fi
+###################
+## Assign inputs ##
+###################
 
-while [[ $# -gt 1 ]]; do
-	key="$1"
-	case $key in
-		-r)
-		ref="$2"
-		shift # past argument
-		;;
-		-n)
-		n_reads="$2"
-		shift # past argument
-		;;
-		-i)
-		iterations="$2"
-		shift # past argument
-		;;
-		*)
-		# unknown option
-		;;
-	esac
-	shift # past argument or value
+# Define usage of the script
+function print_usage {
+  printf """
+Usage: 
+smaltalign.sh -r <reference_file> [options] <fastq_file/directory>
+Options:
+	[-h or --help]
+	[-n or --numreads]
+	[-i or --iterations]
+	[-o or --outdir]
+	[-d or --indels]
+"""
+}
+# Describe usage of the tool and provide help
+function print_help {
+  print_usage
+  printf """
+Options:
+	-h, --help:
+		Show this help message and exit.
+	-n, --numreads:
+		Number of reads used for subsampling.
+		Default: 200000.
+	-i, --iterations:
+		Number of iterations.
+		Default: 4.
+	-o, --outdir:
+		Path to the output directory (it must exist).
+		Default: current directory.
+	-d, --indels:
+		If required, extract indels as well.
+		Default: don't perform this step.
+Required arguments:
+	-r, --reference:
+		Path to the reference file needed for the analysis.
+		The file can contain one reference or several.
+		If it has several references, the best one is automatically chosen.
+	fastq_file/directory:
+		Path to the FASTQ file to analyse.
+		Note that no flag is required for it.
+"""
+}
+
+# Define inputs
+for ARGS in "$@"; do
+  shift
+        case "$ARGS" in
+                "--reference") set -- "$@" "-r" ;;
+                "--numreads") set -- "$@" "-n" ;;
+                "--iterations") set -- "$@" "-i" ;;
+                "--outdir") set -- "$@" "-o" ;;
+				"--indels") set -- "$@" "-d" ;;
+                "--help") set -- "$@" "-h" ;;
+                *) set - "$@" "$ARGS"
+        esac
 done
 
+# Define defaults
+outdir="./"; n_reads=200000; iterations=4; indels=0
+
+# Define all parameters
+while getopts 'r:n::i::o::dh' flag; do
+        case "${flag}" in
+                r) reference=${OPTARG} ;;
+                n) n_reads=${OPTARG} ;;
+                i) iterations=${OPTARG} ;;
+				o) outdir=${OPTARG} ;;
+                d) indels=${OPTARG} ;;
+                h) print_help
+                   exit 1;;
+                *) print_usage
+                    exit 1;;
+        esac
+done
+shift $(expr $OPTIND - 1 )
 if [[ -n $1 ]]; then
     sample_dir=$1
 fi
 
+### defaults
+script_dir=$( dirname "$(readlink -f "$0")" )
+
 ### convert relative to absolute path
-ref=$( readlink -f $ref )
+ref=$( readlink -f $reference )
 sample_dir=$( readlink -f $sample_dir )
+outdir=$( readlink -f $outdir )
 
 ### print arguments
 echo -e 'sample_dir: ' $sample_dir
@@ -53,6 +99,8 @@ echo -e 'script_dir: ' $script_dir
 echo -e 'ref: ' $ref
 echo -e 'n_reads: ' $n_reads
 echo -e 'iterations: ' $iterations
+echo -e 'outdir: ' $outdir
+echo -e 'indels: ' $indels
 
 
 ### loop over list of files to analyse
@@ -62,20 +110,31 @@ for i in $list; do
 	name=$(basename $i | sed 's/_L001_R.*//' | sed 's/.fastq.gz//'| sed 's/.fastq//')
 
 	### sample reads with seqtk
-	seqtk sample $i $n_reads > ${name}_reads.fastq
-	n_sample=$(wc -l ${name}_reads.fastq | cut -f 1 -d " ")
+	seqtk sample $i $n_reads > ${outdir}/${name}_reads.fastq
+	n_sample=$(wc -l ${outdir}/${name}_reads.fastq | cut -f 1 -d " ")
+	echo $n_sample
 	n_sample=$(($n_sample / 4))
+
+	# select the most probable reference
+	n_refs=$(grep "^>" $all_ref | wc -l)
+	if [ "$n_refs3" -gt 1 ]; then
+		python $script_dir/select_reference.py -f ${outdir}/${name}_reads.fastq -r $all_ref -s 1000
+		mv ./reference_freq.csv ${outdir}/${name}_references_freq.csv
+		mv ./chosen_reference.fasta ${outdir}/${name}_chosen_reference.fasta
+		ref=${outdir}/${name}_chosen_reference.fasta
+	fi
+	echo "Using reference: $ref"
 
 	### de novo aligment
 	echo
 	echo sample $name, $n_sample reads, de-novo alignment
 	echo "*******************************************************************************"
-	velveth ${name} 29 -fastq ${name}_reads.fastq
-	velvetg ${name} -min_contig_lgth 200
+	velveth ${outdir}/${name} 29 -fastq ${outdir}/${name}_reads.fastq
+	velvetg ${outdir}/${name} -min_contig_lgth 200
 
 	### fake fastq of contigs and cat to reads in triplicate
-	awk '/^>/ {printf("\n%s\n",$0);next; } { printf("%s",$0);}  END {printf("\n");}' < ${name}/contigs.fa | awk 'BEGIN {RS = ">" ; FS = "\n"} NR > 1 {print "@"$1"\n"$2"\n+"$1"\n"gensub(/./, "I", "g", $2)}' > ${name}/contigs.fastq
-	cat ${name}_reads.fastq ${name}/contigs.fastq ${name}/contigs.fastq ${name}/contigs.fastq > ${name}_reads_contigs.fasta
+	awk '/^>/ {printf("\n%s\n",$0);next; } { printf("%s",$0);}  END {printf("\n");}' < ${outdir}/${name}/contigs.fa | awk 'BEGIN {RS = ">" ; FS = "\n"} NR > 1 {print "@"$1"\n"$2"\n+"$1"\n"gensub(/./, "I", "g", $2)}' > ${outdir}/${name}/contigs.fastq
+	cat ${outdir}/${name}_reads.fastq ${outdir}/${name}/contigs.fastq ${outdir}/${name}/contigs.fastq ${outdir}/${name}/contigs.fastq > ${outdir}/${name}_reads_contigs.fasta
 
 	it=1
 	while [ "$it" -le "$iterations" ]; do
@@ -90,60 +149,77 @@ for i in $list; do
 		fi
 
 		### align with smalt to reference, reads either ${name}_reads.fastq or ${name}_reads_contigs.fasta
-		smalt index -k 7 -s 2 ${name}_${it}_smalt_index $ref
+		smalt index -k 7 -s 2 ${outdir}/${name}_${it}_smalt_index $ref
 		samtools faidx $ref
 
 		if [ "$it" -eq 1 ]; then
-			smalt map -n 24 -x -y 0.5 -f samsoft -o ${name}_${it}.sam ${name}_${it}_smalt_index ${name}_reads_contigs.fasta
+			smalt map -n 24 -x -y 0.5 -f samsoft -o ${outdir}/${name}_${it}.sam ${outdir}/${name}_${it}_smalt_index ${outdir}/${name}_reads_contigs.fasta
 		else
-			smalt map -n 24 -x -y 0.5 -f samsoft -o ${name}_${it}.sam ${name}_${it}_smalt_index ${name}_reads.fastq
+			smalt map -n 24 -x -y 0.5 -f samsoft -o ${outdir}/${name}_${it}.sam ${outdir}/${name}_${it}_smalt_index ${outdir}/${name}_reads.fastq
 		fi
 
-		samtools view -Su ${name}_${it}.sam | samtools sort -o ${name}_${it}.bam
-		samtools index ${name}_${it}.bam
+		samtools view -Su ${outdir}/${name}_${it}.sam | samtools sort -o ${outdir}/${name}_${it}.bam
+		samtools index ${outdir}/${name}_${it}.bam
 
 		### create consensus with freebayes
-		freebayes -f $ref -p 1 ${name}_${it}.bam > ${name}_${it}.vcf
-		muts=$(grep -c -v "^#" ${name}_${it}.vcf)
-        if [ "$muts" -eq "0" ]; then
+		freebayes -f $ref -p 1 ${outdir}/${name}_${it}.bam > ${outdir}/${name}_${it}.vcf
+		muts=$(grep -c -v "^#" ${outdir}/${name}_${it}.vcf)
+		if [ "$muts" -eq "0" ]; then
             echo WARNING: vcf file empty
-            cat $ref > ${name}_${it}_cons.fasta
+            cat $ref > ${outdir}/${name}_${it}_cons.fasta
         else
-            vcf2fasta -f $ref -p ${name}_${it}_ -P 1 ${name}_${it}.vcf
-            mv ${name}_${it}_unknown* ${name}_${it}_cons.fasta
+            vcf2fasta -f $ref -p ${outdir}/${name}_${it}_ -P 1 ${outdir}/${name}_${it}.vcf
+            mv ${outdir}/${name}_${it}_unknown* ${outdir}/${name}_${it}_cons.fasta
         fi
 
 		### create vcf with lofreq
-		rm -f ${name}_${it}_lofreq.vcf
+		rm -f ${outdir}/${name}_${it}_lofreq.vcf
 
         if [ "$(uname)" == "Darwin" ]; then
-            cores=$(sysctl -n hw.ncpu) ### Mac OS X platform
+			cores=$(sysctl -n hw.ncpu) ### Mac OS X platform
         elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-            cores=$(nproc) ### GNU/Linux platform
+			cores=$(nproc) ### GNU/Linux platform
         else
             cores=2 ### unkonwn/other platforms
         fi
         cores=$(expr $cores / 2) ### only run on half the cores
 		cores="${cores/0/1}"
         echo =-=-= lofreq with $cores cores =-=-=
-        lofreq call-parallel --pp-threads $cores -f $ref -o ${name}_${it}_lofreq.vcf ${name}_${it}.bam
+		lofreq call-parallel --pp-threads $cores -f $ref -o ${outdir}/${name}_${it}_lofreq.vcf ${outdir}/${name}_${it}.bam
+
+		if [[ $indels != 0 ]]; then
+			echo "Extracting indels"
+			samtools sort ${outdir}/${name}_${it}.bam > ${outdir}/${name}_${it}_sorted.bam
+			lofreq indelqual --dindel -f $ref ${outdir}/${name}_${it}_sorted.bam  -o ${outdir}/${name}_${it}_indel.bam
+			samtools index -b ${outdir}/${name}_${it}_indel.bam
+			lofreq call-parallel --pp-threads $cores --call-indels -f $ref -o ${outdir}/${name}_${it}_lofreq_indel.vcf ${outdir}/${name}_${it}_indel.bam
+
+			if [ $(grep -v "^#" ${outdir}/${name}_${it}_lofreq_indel.vcf | wc -l) -gt 0 ] ; then
+				lofreq filter --only-indels -a 0.15 -v 10 --indelqual-thresh 20 -i ${outdir}/${name}_${it}_lofreq_indel.vcf -o ${outdir}/${name}_${it}_lofreq_indel_temp_hq.vcf
+				echo lofreq filter is done ${outdir}/${name}_${it}_lofreq_indel_temp_hq.vcf 
+				if [ $(grep -v "^#" ${outdir}/${name}_${it}_lofreq_indel_temp_hq.vcf | wc -l) -gt 0 ] ; then
+					cp ${outdir}/${name}_${it}_lofreq_indel_temp_hq.vcf ${outdir}/${name}_lofreq_indel_hq.vcf
+					echo ${outdir}/lofreq_indel_hq.vcf file is created. 
+				fi
+			fi
+		fi
 
 		### calculate depth
-		samtools depth -d 1000000 ${name}_${it}.bam > ${name}_${it}.depth
+		samtools depth -d 1000000 ${outdir}/${name}_${it}.bam > ${outdir}/${name}_${it}.depth
 
 		### remove temporary files of this iteration
-		rm -f ${name}_${it}.sam
-		rm -f ${name}_${it}.vcf
-		rm -f ${name}_${it}_smalt_index.*
-		rm -f ${name}_*_cons.fasta.fai
+		rm -f ${outdir}/${name}_${it}.sam
+		rm -f ${outdir}/${name}_${it}.vcf
+		rm -f ${outdir}/${name}_${it}_smalt_index.*
+		rm -f ${outdir}/${name}_*_cons.fasta.fai
 
 		### new ref for next iteration
-		ref=${name}_${it}_cons.fasta
+		ref=${outdir}/${name}_${it}_cons.fasta
 		((it+=1))
-    done
+	done
 
 	### remove temporary files
-	rm -f ${name}_reads.fastq
-	rm -f ${name}_reads_contigs.fasta
-	rm -rf ${name}
+	rm -f ${outdir}/${name}_reads.fastq
+	rm -f ${outdir}/${name}_reads_contigs.fasta
+	rm -rf ${outdir}/${name}
 done
