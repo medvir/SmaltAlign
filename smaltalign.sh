@@ -83,6 +83,9 @@ done
 shift $(expr $OPTIND - 1 )
 if [[ -n $1 ]]; then
     sample_dir=$1
+else
+	echo "Missing FASTQ file!"
+	exit 1
 fi
 
 ### defaults
@@ -112,15 +115,14 @@ for i in $list; do
 	### sample reads with seqtk
 	seqtk sample $i $n_reads > ${outdir}/${name}_reads.fastq
 	n_sample=$(wc -l ${outdir}/${name}_reads.fastq | cut -f 1 -d " ")
-	echo $n_sample
 	n_sample=$(($n_sample / 4))
 
 	# select the most probable reference
-	n_refs=$(grep "^>" $all_ref | wc -l)
-	if [ "$n_refs3" -gt 1 ]; then
-		python $script_dir/select_reference.py -f ${outdir}/${name}_reads.fastq -r $all_ref -s 1000
-		mv ./reference_freq.csv ${outdir}/${name}_references_freq.csv
-		mv ./chosen_reference.fasta ${outdir}/${name}_chosen_reference.fasta
+	n_refs=$(grep "^>" $ref | wc -l)
+	if [ "$n_refs" -gt 1 ]; then
+		python $script_dir/select_reference.py -f ${outdir}/${name}_reads.fastq -r $ref -s 1000 -o $outdir
+		mv ${outdir}/reference_freq.csv ${outdir}/${name}_references_freq.csv
+		mv ${outdir}/chosen_reference.fasta ${outdir}/${name}_chosen_reference.fasta
 		ref=${outdir}/${name}_chosen_reference.fasta
 	fi
 	echo "Using reference: $ref"

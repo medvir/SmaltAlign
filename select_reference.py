@@ -45,7 +45,7 @@ def extract_fasta_by_id(input_fasta, sequence_id, output_fasta):
                 return
         logging.info(f"Sequence ID {sequence_id} not found in the input file.")
         
-def main(fastq_file, reference_fasta, subsample_num):
+def main(fastq_file, reference_fasta, subsample_num, outdir):
     """Performs a BLAST analysis and selects a best reference sequence.
     Args:
         fastq_file (str): Path to the FASTQ file.
@@ -57,14 +57,14 @@ def main(fastq_file, reference_fasta, subsample_num):
     subsample_cmd = shlex.split('seqtk sample %s %d' % (fastq_file, subsample_num))
     subsample_process = subprocess.Popen(subsample_cmd, stdout=subprocess.PIPE)
     convert_cmd = shlex.split('seqtk seq -A -')
-    with open('subsampled_sequences.fasta', 'w') as fasta_output:
+    with open('%s/subsampled_sequences.fasta' % outdir, 'w') as fasta_output:
         convert_process = subprocess.Popen(convert_cmd, stdin=subsample_process.stdout, stdout=fasta_output)
         subsample_process.stdout.close()
         convert_process.communicate()
     fasta_output.close()
     
-    blast_output_file = 'blast_results.tsv'
-    blast_cmd = 'blastn -task megablast -query subsampled_sequences.fasta -outfmt 6'
+    blast_output_file = '%s/blast_results.tsv' % outdir
+    blast_cmd = 'blastn -task megablast -query %s/subsampled_sequences.fasta -outfmt 6' % outdir
     blast_cmd += ' -subject {} -out {}'.format(shlex.quote(reference_fasta),
                                                   blast_output_file)
     blast_process = subprocess.Popen(shlex.split(blast_cmd), universal_newlines=True)
@@ -95,10 +95,10 @@ def main(fastq_file, reference_fasta, subsample_num):
     best_reference_id = max(reference_frequencies, key=reference_frequencies.get)
     logging.info(f"Best Reference ID {best_reference_id} with max frequency {max_frequency}.")
     
-    extract_fasta_by_id(reference_fasta, best_reference_id, output_fasta = 'chosen_reference.fasta')
+    extract_fasta_by_id(reference_fasta, best_reference_id, output_fasta = '%s/chosen_reference.fasta' % outdir)
     sorted_hit_frequencies = sorted(hit_frequencies.items(), key=lambda x:x[1], reverse=True)
     
-    with open('reference_freq.csv', 'w') as ref_freq_output:
+    with open('%s/reference_freq.csv' % outdir, 'w') as ref_freq_output:
         for match, f in sorted_hit_frequencies:
             #if sorted_hit_frequencies[match]:
             print('%s,%5.4f' % (match, f), file=ref_freq_output)
@@ -120,15 +120,17 @@ if __name__ == "__main__":
                         help="reference sequences in fasta format")
     group1.add_argument("-s", "--subsample", default="1000", type=int, dest="s",
                         help="number of subsampled reads")
+    group1.add_argument("-o", "--outdir", default="./", type=str, dest="o",
+                        help="path to the output directory")
 
     # exit so that log file is not written
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit()
-    
+    args = parser.parse_args()
+
     log_format = '%(levelname)s %(asctime)s %(filename)s: %(funcName)s() %(lineno)d: \t%(message)s'
-    logging.basicConfig(filename='select_reference.log', level=logging.INFO, format=log_format, datefmt='%Y/%m/%d %H:%M:%S')
+    logging.basicConfig(filename='%s/select_reference.log' % args.o, level=logging.INFO, format=log_format, datefmt='%Y/%m/%d %H:%M:%S')
     logging.info(' '.join(sys.argv))
 
-    args = parser.parse_args()
-    chosen_sequence_id, max_frequency = main(args.f, args.r, args.s)
+    chosen_sequence_id, max_frequency = main(args.f, args.r, args.s, args.o)
