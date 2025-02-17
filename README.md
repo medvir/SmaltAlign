@@ -60,23 +60,33 @@ To analyse the results of a Diagnostic sequencing run following steps need to be
 This shell script was written to process Influenza sequences with SmaltAlign:
 * iteration over all `.fastq.gz` files in the current directory
 * create a folder for each sample containing segment1-8 subfolders
-* run `select_ref.py` (written by @ozagordi) which selects the best reference sequence for each segment from a Influenza reference database (selected sequences from the [NCBI Influenza Virus Database](https://www.ncbi.nlm.nih.gov/genomes/FLU/Database/nph-select.cgi?go=database))
+* run `select_ref_segments.py` which selects the best reference sequence for each segment from a Influenza reference database (selected sequences from the [NCBI Influenza Virus Database](https://www.ncbi.nlm.nih.gov/genomes/FLU/Database/nph-select.cgi?go=database))
 ![IV-A references](References/genomes_query.png)
 * using the best reference sequence to run `smaltalign.sh` for each segment
 * run Rscripts `cov_plot.R` and `wts.R`  
 
-Usage is the same as in batch.sh except that you don't need to enter the filenames.
+Usage: 
+batch_influenza.sh [options]
+Options:
+	[-h or --help]
+	[-r or --refdir]
+	[-s or --sampledir]
+	[-n or --numreads]
+	[-i or --iterations]
+    [-o or --outdir]
+"""
 
 ##### wts.R
 `wts.R` is an R script to combine consensus sequence, variants and coverage for the last iteration of all `lofreq.vcf` files in a directory.
 It saves a `_x_WTS.fasta` file containing the consensus sequence with wobbles (at a certain threshold x) and a `.csv` file  containing coverage and variant frequencies for every position.
-The the variant threshold and the minimal coverage have to be adapted manually in the first lines.
+The variant threshold and the minimal coverage have to be provided by the user.
 
 ## cov_plot.R
 `cov_plot.R` is an R script to plot and save the coverage of all iterations of all `.depth` files in the working directory.
 
 # Contributions
-- Maryam Zaheri*
+- Judith Bergadà-Pijuan*
+- Maryam Zaheri
 - Stefan Schmutz
 - Osvaldo Zagordi
 - Michael Huber**

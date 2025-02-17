@@ -15,12 +15,9 @@ writes it to a new FASTA file.
 @author: maryamzaheri
 """
 import argparse
-import os
 import pandas as pd
 
 from Bio import SeqIO
-from Bio.Seq import Seq
-from Bio.SeqRecord import SeqRecord
 
 import subprocess
 import sys

@@ -120,7 +120,7 @@ for i in $list; do
 	# select the most probable reference
 	n_refs=$(grep "^>" $ref | wc -l)
 	if [ "$n_refs" -gt 1 ]; then
-		python $script_dir/select_reference.py -f ${outdir}/${name}_reads.fastq -r $ref -s 1000 -o $outdir
+		python $script_dir/select_ref_whole.py -f ${outdir}/${name}_reads.fastq -r $ref -s 1000 -o $outdir
 		mv ${outdir}/reference_freq.csv ${outdir}/${name}_references_freq.csv
 		mv ${outdir}/chosen_reference.fasta ${outdir}/${name}_chosen_reference.fasta
 		ref=${outdir}/${name}_chosen_reference.fasta
