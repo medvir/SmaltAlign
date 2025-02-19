@@ -116,7 +116,7 @@ for filename in $sample_dir/*.fastq.gz; do
         ref_dir=$( readlink -f $ref_dir )
     else
         mkdir ${outdir}/${name}/Reference_sequences
-        python $script_dir/select_ref_segments.py $filename ${outdir}/${name}/Reference_sequences
+        python $script_dir/select_ref_segments.py $filename ${outdir}/${name}/Reference_sequences ${script_dir}
         ref_dir=$( readlink -f ${outdir}/${name}/Reference_sequences )
     fi
 
