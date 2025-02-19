@@ -12,11 +12,11 @@ function print_usage {
 Usage: 
 batch_influenza.sh [options]
 Options:
-	[-h or --help]
-	[-r or --refdir]
-	[-s or --sampledir]
-	[-n or --numreads]
-	[-i or --iterations]
+    [-h or --help]
+    [-r or --refdir]
+    [-s or --sampledir]
+    [-n or --numreads]
+    [-i or --iterations]
     [-o or --outdir]
 """
 }
@@ -25,34 +25,34 @@ function print_help {
   print_usage
   printf """
 Options:
-	-h, --help:
-		Show this help message and exit.
+    -h, --help:
+        Show this help message and exit.
     -r, --refdir:
-		Path to the reference directory needed for the analysis.
-		The file must contain the references for all segments.
+        Path to the reference directory needed for the analysis.
+        The file must contain the references for all segments.
         If it doesn't exist, the best reference for each sample
         and segment will be chosen automatically.
-		Default: "./Reference_sequences".
+        Default: ./Reference_sequences.
     -s, --sampledir:
-		Path to the sample directory.
-		It must contain one (or more) FASTQ files.
+        Path to the sample directory.
+        It must contain one (or more) FASTQ files.
         Names of the FASTQ files must end with ".fastq.gz".
-		Default: "current directory".
-	-n, --numreads:
-		Number of reads used for subsampling.
-		Default: 10000000.
-	-i, --iterations:
-		Number of iterations.
-		Default: 4.
+        Default: current directory.
+    -n, --numreads:
+        Number of reads used for subsampling.
+        Default: 10000000.
+        -i, --iterations:
+        Number of iterations.
+        Default: 4.
     -t, --varthres:
-        Minority variant threshold (%).
+        Minority variant threshold, percentage.
         Default: 15.
     -c, --mincov:
         Minimal coverage required (reads).
         Default: 3.
-	-o, --outdir:
-		Path to the output directory (it must exist).
-		Default: current directory.
+    -o, --outdir:
+        Path to the output directory (it must exist).
+        Default: current directory.
 """
 }
 
