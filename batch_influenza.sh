@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -o pipefail
 
 ###################
 ## Assign inputs ##
@@ -41,7 +41,7 @@ Options:
     -n, --numreads:
         Number of reads used for subsampling.
         Default: 10000000.
-        -i, --iterations:
+    -i, --iterations:
         Number of iterations.
         Default: 4.
     -t, --varthres:
