@@ -7,15 +7,22 @@ library(ggplot2)
 library(stringr)
 library(seqinr)
 
+if (length(args)==1) {
+    # Set default arguments
+    args[2] <- 15
+    args[3] <- 3
+} else if (length(args)==2) {
+    args[3] <- 3
+}
+
 # set path to data (terminal slash is important!)
-#path <- "/Volumes/data/Diagnostics/experiments/170815/"
 path <- paste0(args[1],"/")
 
 # minority variant threshold (%)
-variant_threshold <- 15
+variant_threshold <- as.integer(args[2])
 
 # minimal coverage required (reads)
-minimal_coverage <- 3
+minimal_coverage <- as.integer(args[3])
 
 files <- list.files(path, pattern = "lofreq.vcf")
 
@@ -64,17 +71,17 @@ for (i in files) {
     if (class(try(read.table(vcf_file))) == "try-error") {
         vcf_data = data.frame(POS = 1, REF = NA, ALT = NA, DP = NA, AF = NA) # if vcf file is empty
     } else {
-      vcf_data = try(read_delim(vcf_file, "\t", escape_double = FALSE, col_names = FALSE,
-                                col_types = cols(X4 = col_character(),
-                                                 X5 = col_character()),
-                                comment = "#",
-                                trim_ws = TRUE)) %>%
-        rename(CHROM = X1, POS = X2, ID = X3, REF = X4, ALT = X5, QUAL = X6, FILTER = X7, INFO = X8) %>%
-        separate(INFO, c("DP", "AF", "SB", "DP4"), sep = ";", extra = "drop") %>%
-        select(POS, REF, ALT, DP, AF) %>%
-        mutate(DP = gsub("DP=" ,"", DP)) %>%
-        mutate(AF = round(as.numeric(gsub("AF=" ,"", AF))*100,1)) %>%
-        filter(AF >= variant_threshold) ### filter for AF >= variant_threshold
+        vcf_data = try(read_delim(vcf_file, "\t", escape_double = FALSE, col_names = FALSE,
+                                    col_types = cols(X4 = col_character(),
+                                                    X5 = col_character()),
+                                    comment = "#",
+                                    trim_ws = TRUE)) %>%
+                        rename(CHROM = X1, POS = X2, ID = X3, REF = X4, ALT = X5, QUAL = X6, FILTER = X7, INFO = X8) %>%
+                        separate(INFO, c("DP", "AF", "SB", "DP4"), sep = ";", extra = "drop") %>%
+                        select(POS, REF, ALT, DP, AF) %>%
+                        mutate(DP = gsub("DP=" ,"", DP)) %>%
+                        mutate(AF = round(as.numeric(gsub("AF=" ,"", AF))*100,1)) %>%
+                        filter(AF >= variant_threshold) ### filter for AF >= variant_threshold
     }
 
     cons_data = data.frame(CONS = unlist(strsplit(readLines(cons_file)[-1], ""))) %>%
@@ -104,7 +111,8 @@ for (i in files) {
                                    ifelse(abs(AF - 50) <= 15, REF,  ### use REF although CONS is different when similar frequency
                                           "error")))) %>%                ### else "error"
         mutate(WTS = apply(.[,c('REF', 'ALT')], 1, function(x) call_wobbles(c(x['REF'], x['ALT'])))) %>%
-        select(POS, REF, ALT, AF, COV, WTS)
+        mutate(maj = REF) %>%
+        select(POS, REF, ALT, AF, COV, WTS, maj)
 
     ### resolve duplicate lines in vcf_data for two variants
     for (j in nrow(comb_data):2) {
@@ -118,9 +126,11 @@ for (i in files) {
 
     # apply minimal coverage threshold
     comb_data = comb_data %>%
-        mutate(WTS = ifelse(is.na(COV), "-", ifelse(COV < minimal_coverage, "N", WTS)))
+        mutate(WTS = ifelse(is.na(COV), "-", ifelse(COV < minimal_coverage, "N", WTS))) %>%
+        mutate(maj = ifelse(is.na(COV), "-", ifelse(COV < minimal_coverage, "N", maj)))
 
     # write output files
-    write.csv(comb_data, paste0(path, name_i,  "_", variant_threshold, ".csv"))
+    write.csv(comb_data, paste0(path, name_i, "_", variant_threshold, ".csv"))
     write.fasta(paste(comb_data$WTS, collapse = ""), name_i, paste0(path, name_i, "_", variant_threshold, "_WTS.fasta"), open = "w", nbchar = 60)
+    write.fasta(paste(comb_data$maj, collapse = ""), name_i, paste0(path, name_i, "_", "majority_cons.fasta"), open = "w", nbchar = 60)
 }
