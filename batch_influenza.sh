@@ -17,6 +17,8 @@ Options:
     [-s or --sampledir]
     [-n or --numreads]
     [-i or --iterations]
+    [-t or --varthres]
+    [-c or --mincov]
     [-o or --outdir]
 """
 }
@@ -79,7 +81,7 @@ sample_dir="./"
 varthres=15; mincov=3
 
 # Define all parameters
-while getopts 'r::s::n::i::o::dh' flag; do
+while getopts 'r::s::n::i::t::c::o::dh' flag; do
         case "${flag}" in
                 r) ref_dir=${OPTARG} ;;
                 s) sample_dir=${OPTARG} ;;

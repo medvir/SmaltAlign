@@ -8,7 +8,6 @@ library(stringr)
 library(cowplot)
 
 # set path to data (terminal slash is important!)
-#path <- "/Volumes/data/Diagnostics/experiments/170815/"
 path <- paste0(args[1],"/")
 
 files = list.files(path, pattern = "depth")
