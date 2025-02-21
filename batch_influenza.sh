@@ -128,10 +128,9 @@ for filename in $sample_dir/*.fastq.gz; do
         -r $ref_dir/*segment*$segment*fasta \
         -n $n \
         -i $i \
+        -t $varthres \
+        -c $mincov \
         -o ${outdir}/${name}/segment${segment} $filename
-
-        Rscript ${script_dir}/cov_plot.R ${outdir}/${name}/segment${segment}
-        Rscript ${script_dir}/wts.R ${outdir}/${name}/segment${segment} $varthres $mincov
         
         cp ${outdir}/${name}/segment${segment}/*WTS.fasta ${outdir}/${name}/segment${segment}/cons/ ) &
     done
