@@ -137,9 +137,14 @@ for i in $list; do
 	fi
 
 	### sample reads with seqtk
-	seqtk sample $i $n_reads > ${new_outdir}/${name}_reads.fastq
-	n_sample=$(wc -l ${new_outdir}/${name}_reads.fastq | cut -f 1 -d " ")
-	n_sample=$(($n_sample / 4))
+	if [[ $n_reads == "all" ]]; then 
+		cp $i ${new_outdir}/${name}_reads.fastq
+		n_sample="all"
+	else
+		seqtk sample $i $n_reads > ${new_outdir}/${name}_reads.fastq
+		n_sample=$(wc -l ${new_outdir}/${name}_reads.fastq | cut -f 1 -d " ")
+		n_sample=$(($n_sample / 4))
+	fi
 
 	# select the most probable reference
 	n_refs=$(grep "^>" $ref | wc -l)

@@ -49,6 +49,10 @@ However, if you are not sure about the closest reference sequence, you can also 
 If you would like to analyse only one FASTQ file at a time, you can specify it into `<fastq_file/directory>`. In this case, you can specify either the folder where the file is located, or the file itself.
 However, if you would like to anlayse multiple FASTQ files at a time, you can specify the folder to all the FASTQ files into `<fastq_file/directory>`. In this case, you need to have all your FASTQ files in the same folder.
 
+##### Number or freads
+By default, the tool subsamples the sequencing reads to 200000. However, this number can be changed by the users.  
+If you would like to analyse all sequencing reads without subsampling, then use -n "all".
+
 ## batch_influenza.sh
 
 ##### Usage
