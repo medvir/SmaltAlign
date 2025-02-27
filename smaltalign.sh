@@ -105,14 +105,14 @@ fi
 script_dir=$( dirname "$(readlink -f "$0")" )
 
 ### convert relative to absolute path
-ref=$( readlink -f $reference )
+reference=$( readlink -f $reference )
 sample_dir=$( readlink -f $sample_dir )
 outdir=$( readlink -f $outdir )
 
 ### print arguments
 echo -e 'sample_dir: ' $sample_dir
 echo -e 'script_dir: ' $script_dir
-echo -e 'ref: ' $ref
+echo -e 'reference: ' $reference
 echo -e 'n_reads: ' $n_reads
 echo -e 'iterations: ' $iterations
 echo -e 'varthres: ' $varthres
@@ -126,7 +126,8 @@ if [ -d $sample_dir ]; then list=$(ls $sample_dir | grep .fastq | sed -e "s#^#${
 num_files=$(echo $list | wc -w)
 
 for i in $list; do
-
+	
+	ref=$reference
 	name=$(basename $i | sed 's/_L001_R.*//' | sed 's/.fastq.gz//'| sed 's/.fastq//')
 
 	if [ $num_files -gt 1 ]; then
@@ -138,7 +139,7 @@ for i in $list; do
 
 	### sample reads with seqtk
 	if [[ $n_reads == "all" ]]; then 
-		cp $i ${new_outdir}/${name}_reads.fastq
+		gunzip -c $i > ${new_outdir}/${name}_reads.fastq
 		n_sample="all"
 	else
 		seqtk sample $i $n_reads > ${new_outdir}/${name}_reads.fastq
@@ -200,7 +201,8 @@ for i in $list; do
             cat $ref > ${new_outdir}/${name}_${it}_cons.fasta
         else
             vcf2fasta -f $ref -p ${new_outdir}/${name}_${it}_ -P 1 ${new_outdir}/${name}_${it}.vcf
-            mv ${new_outdir}/${name}_${it}_unknown* ${new_outdir}/${name}_${it}_cons.fasta
+			seqkit replace -p ":" -r '_' ${new_outdir}/${name}_${it}_unknown* > ${new_outdir}/${name}_${it}_cons.fasta
+            rm ${new_outdir}/${name}_${it}_unknown*
         fi
 
 		### create vcf with lofreq
