@@ -19,6 +19,7 @@ Options:
 	[-c or --mincov]
 	[-o or --outdir]
 	[-d or --indels]
+	[-m or --mergecov]
 """
 }
 # Describe usage of the tool and provide help
@@ -46,6 +47,9 @@ Options:
 	-d, --indels:
 		If required, extract indels as well.
 		Default: don't perform this step.
+	-m, --mergecov:
+		If required, generate an additional covplot merging all results.
+		Default: don't perform this step.
 Required arguments:
 	-r, --reference:
 		Path to the reference file needed for the analysis.
@@ -68,6 +72,7 @@ for ARGS in "$@"; do
                 "--mincov") set -- "$@" "-c" ;;
                 "--outdir") set -- "$@" "-o" ;;
 				"--indels") set -- "$@" "-d" ;;
+				"--mergecov") set -- "$@" "-m" ;;
                 "--help") set -- "$@" "-h" ;;
                 *) set - "$@" "$ARGS"
         esac
@@ -75,10 +80,10 @@ done
 
 # Define defaults
 outdir="./"; n_reads=200000; iterations=4; indels=0
-varthres=15; mincov=3
+varthres=15; mincov=3; mergecov=0
 
 # Define all parameters
-while getopts 'r:n::i::t::c::o::dh' flag; do
+while getopts 'r:n::i::t::c::o::dmh' flag; do
         case "${flag}" in
                 r) reference=${OPTARG} ;;
                 n) n_reads=${OPTARG} ;;
@@ -87,6 +92,7 @@ while getopts 'r:n::i::t::c::o::dh' flag; do
                 c) mincov=${OPTARG} ;;
 				o) outdir=${OPTARG} ;;
                 d) indels=${OPTARG} ;;
+				m) mergecov=${OPTARG} ;;
                 h) print_help
                    exit 1;;
                 *) print_usage
@@ -119,6 +125,7 @@ echo -e 'varthres: ' $varthres
 echo -e 'mincov: ' $mincov
 echo -e 'outdir: ' $outdir
 echo -e 'indels: ' $indels
+echo -e 'mergecov: ' $mergecov
 
 
 ### loop over list of files to analyse
@@ -129,6 +136,9 @@ for i in $list; do
 	
 	ref=$reference
 	name=$(basename $i | sed 's/_L001_R.*//' | sed 's/.fastq.gz//'| sed 's/.fastq//')
+	if [[ $mergecov != 0 ]]; then
+		all_names="${all_names}${name} "
+	fi
 
 	if [ $num_files -gt 1 ]; then
 		mkdir ${outdir}/${name}
@@ -259,3 +269,9 @@ for i in $list; do
 	Rscript ${script_dir}/cov_plot.R ${new_outdir}
     Rscript ${script_dir}/wts.R ${new_outdir} $varthres $mincov
 done
+
+if [[ $mergecov != 0 ]]; then
+	echo ${outdir}
+	echo "${all_names}"
+	Rscript ${script_dir}/cov_plot.R ${outdir} "${all_names}"
+fi
