@@ -37,7 +37,8 @@ Options:
 	[-t or --varthres]  
 	[-c or --mincov]  
 	[-o or --outdir]  
-	[-d or --indels]  
+	[-d or --indels]
+	[-m or --mergecov]  
 
 Run `smaltalign.sh -h` for detailed information of the options and the default parameters.
 

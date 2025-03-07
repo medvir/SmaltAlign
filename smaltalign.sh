@@ -271,7 +271,5 @@ for i in $list; do
 done
 
 if [[ $mergecov != 0 ]]; then
-	echo ${outdir}
-	echo "${all_names}"
 	Rscript ${script_dir}/cov_plot.R ${outdir} "${all_names}"
 fi
