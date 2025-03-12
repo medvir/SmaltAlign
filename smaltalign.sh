@@ -194,7 +194,7 @@ for i in $list; do
 		smalt index -k 7 -s 2 ${new_outdir}/${name}_${it}_smalt_index $ref
 		samtools faidx $ref
 
-		if [ "$it" -eq 1 ]; then
+		if [ "$it" -eq 1 ] && [ "$iterations" -gt 1 ]; then
 			smalt map -n 24 -x -y 0.5 -f samsoft -o ${new_outdir}/${name}_${it}.sam ${new_outdir}/${name}_${it}_smalt_index ${new_outdir}/${name}_reads_contigs.fasta
 		else
 			smalt map -n 24 -x -y 0.5 -f samsoft -o ${new_outdir}/${name}_${it}.sam ${new_outdir}/${name}_${it}_smalt_index ${new_outdir}/${name}_reads.fastq
