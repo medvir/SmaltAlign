@@ -163,8 +163,11 @@ for i in $list; do
 		python $script_dir/select_ref_whole.py -f ${new_outdir}/${name}_reads.fastq -r $ref -s 1000 -o $new_outdir
 		mv ${new_outdir}/reference_freq.csv ${new_outdir}/${name}_references_freq.csv
 		mv ${new_outdir}/chosen_reference.fasta ${new_outdir}/${name}_chosen_reference.fasta
-		ref=${new_outdir}/${new_outdir}_chosen_reference.fasta
+		ref=${new_outdir}/${name}_chosen_reference.fasta
 	fi
+	seqkit replace -p "/|:" -r '_' $ref > ${new_outdir}/${name}_chosen_mod_reference.fasta
+	mv ${new_outdir}/${name}_chosen_mod_reference.fasta ${new_outdir}/${name}_chosen_reference.fasta
+	ref=${new_outdir}/${name}_chosen_reference.fasta
 	echo "Using reference: $ref"
 
 	### de novo aligment
