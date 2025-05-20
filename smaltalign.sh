@@ -79,7 +79,7 @@ for ARGS in "$@"; do
 done
 
 # Define defaults
-outdir="./"; n_reads=200000; iterations=4; indels=0
+outdir_final="./"; n_reads=200000; iterations=4; indels=0
 varthres=15; mincov=3; mergecov=0
 
 # Define all parameters
@@ -90,7 +90,7 @@ while getopts 'r:n::i::t::c::o::dmh' flag; do
                 i) iterations=${OPTARG} ;;
 				t) varthres=${OPTARG} ;;
                 c) mincov=${OPTARG} ;;
-				o) outdir=${OPTARG} ;;
+				o) outdir_final=${OPTARG} ;;
                 d) indels=${OPTARG} ;;
 				m) mergecov=${OPTARG} ;;
                 h) print_help
@@ -113,7 +113,7 @@ script_dir=$( dirname "$(readlink -f "$0")" )
 ### convert relative to absolute path
 reference=$( readlink -f $reference )
 sample_dir=$( readlink -f $sample_dir )
-outdir=$( readlink -f $outdir )
+outdir_final=$( readlink -f $outdir_final )
 
 ### print arguments
 echo -e 'sample_dir: ' $sample_dir
@@ -123,10 +123,14 @@ echo -e 'n_reads: ' $n_reads
 echo -e 'iterations: ' $iterations
 echo -e 'varthres: ' $varthres
 echo -e 'mincov: ' $mincov
-echo -e 'outdir: ' $outdir
+echo -e 'outdir: ' $outdir_final
 echo -e 'indels: ' $indels
 echo -e 'mergecov: ' $mergecov
 
+# Specify temporal location for all intermediate files
+outdir="/tmp/SmaltAlignOutputs/"
+rm -rf ${outdir}
+mkdir ${outdir}
 
 ### loop over list of files to analyse
 if [ -d $sample_dir ]; then list=$(ls $sample_dir | grep .fastq | sed -e "s#^#${sample_dir}/#"); else list=${sample_dir}; fi
@@ -276,3 +280,7 @@ done
 if [[ $mergecov != 0 ]]; then
 	Rscript ${script_dir}/cov_plot.R ${outdir} "${all_names}"
 fi
+
+# Move all outputs to the desired output directory
+mv ${outdir}/* ${outdir_final}/
+rm -rf ${outdir}
