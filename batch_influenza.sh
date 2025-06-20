@@ -132,7 +132,7 @@ for filename in $sample_dir/*.fastq.gz; do
         -c $mincov \
         -o ${outdir}/${name}/segment${segment} $filename
         
-        cp ${outdir}/${name}/segment${segment}/*WTS.fasta ${outdir}/${name}/segment${segment}/cons/ ) &
+        cp ${outdir}/${name}/segment${segment}/*WTS.fasta ${outdir}/${name}/segment${segment}/cons/ )
     done
     wait
 done
