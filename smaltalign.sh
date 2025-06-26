@@ -136,6 +136,9 @@ mkdir ${outdir}
 if [ -d $sample_dir ]; then list=$(ls $sample_dir | grep .fastq | sed -e "s#^#${sample_dir}/#"); else list=${sample_dir}; fi
 num_files=$(echo $list | wc -w)
 
+# Calculate iterations that will be later removed (intermediate files)
+minus_one=$((iterations - 1))
+
 for i in $list; do
 	
 	ref=$reference
@@ -273,6 +276,12 @@ for i in $list; do
 	rm -f ${new_outdir}/${name}_reads_contigs.fasta
 	rm -rf ${new_outdir}/${name}
 
+	it=1
+	while [ "$it" -le "$minus_one" ]; do
+		rm ${new_outdir}/${name}_${it}*
+		((it+=1))
+	done
+	
 	Rscript ${script_dir}/cov_plot.R ${new_outdir}
     Rscript ${script_dir}/wts.R ${new_outdir} $varthres $mincov
 done
