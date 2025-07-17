@@ -128,7 +128,8 @@ echo -e 'indels: ' $indels
 echo -e 'mergecov: ' $mergecov
 
 # Specify temporal location for all intermediate files
-outdir="/tmp/SmaltAlignOutputs/"
+rand_id=$(tr -dc 'a-zA-Z' < <(date +%s%N | sha256sum) | head -c5)
+outdir="/tmp/SmaltAlignOutputs_${rand_id}/"
 rm -rf ${outdir}
 mkdir ${outdir}
 
