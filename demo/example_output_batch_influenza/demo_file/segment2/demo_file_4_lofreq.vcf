@@ -1,0 +1,21 @@
+##fileformat=VCFv4.0
+##FILTER=<ID=PASS,Description="All filters passed">
+##fileDate=20260209
+##source=lofreq call -f /tmp/SmaltAlignOutputs_fdfdc//demo_file_3_cons.fasta --no-default-filter -r seg2:1-73 -o /tmp/lofreq2_call_parallelv6uu6ox6/0.vcf.gz /tmp/SmaltAlignOutputs_fdfdc//demo_file_4.bam 
+##reference=/tmp/SmaltAlignOutputs_fdfdc//demo_file_3_cons.fasta
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Raw Depth">
+##INFO=<ID=AF,Number=1,Type=Float,Description="Allele Frequency">
+##INFO=<ID=SB,Number=1,Type=Integer,Description="Phred-scaled strand bias at this position">
+##INFO=<ID=DP4,Number=4,Type=Integer,Description="Counts for ref-forward bases, ref-reverse, alt-forward and alt-reverse bases">
+##INFO=<ID=INDEL,Number=0,Type=Flag,Description="Indicates that the variant is an INDEL.">
+##INFO=<ID=CONSVAR,Number=0,Type=Flag,Description="Indicates that the variant is a consensus variant (as opposed to a low frequency variant).">
+##INFO=<ID=HRUN,Number=1,Type=Integer,Description="Homopolymer length to the right of report indel position">
+##FILTER=<ID=min_snvqual_20,Description="Minimum SNV Quality (Phred) 20">
+##FILTER=<ID=min_indelqual_20,Description="Minimum Indel Quality (Phred) 20">
+##bcftools_concatVersion=1.23+htslib-1.23
+##bcftools_concatCommand=concat -a -O z -o /tmp/lofreq2_call_parallelv6uu6ox6/concat.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/0.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/1.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/2.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/3.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/4.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/5.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/6.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/7.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/8.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/9.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/10.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/11.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/12.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/13.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/14.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/15.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/16.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/17.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/18.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/19.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/20.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/21.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/22.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/23.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/24.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/25.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/26.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/27.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/28.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/29.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/30.vcf.gz /tmp/lofreq2_call_parallelv6uu6ox6/31.vcf.gz; Date=Mon Feb  9 13:20:49 2026
+##FILTER=<ID=min_dp_10,Description="Minimum Coverage 10">
+##FILTER=<ID=sb_fdr,Description="Strand-Bias Multiple Testing Correction: fdr corr. pvalue > 0.001000">
+##FILTER=<ID=min_snvqual_20,Description="Minimum SNV Quality (Phred) 20">
+##FILTER=<ID=min_indelqual_20,Description="Minimum Indel Quality (Phred) 20">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO

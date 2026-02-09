@@ -1,29 +1,35 @@
 name: smaltalign
 channels:
-- r
-- bioconda
-- conda-forge
-- defaults
+  - conda-forge
+  - bioconda
+  - r
+  - defaults
 dependencies:
-- seqtk
-- velvet
-- smalt
-- samtools
-- freebayes
-- vcflib
-- lofreq
+  # Core Bioinformatics Tools
+  - seqtk          # Used for subsampling fastq
+  - seqkit         # Used for header manipulation (replace)
+  - velvet         # Used for de-novo assembly (velveth/velvetg)
+  - smalt          # Primary aligner
+  - bwa            # Used in select_ref_segments.py
+  - samtools       # Sorting, indexing, depth, and view
+  - blast          # Used in select_ref_whole.py
+  - freebayes      # Consensus generation
+  - vcflib         # Required for vcf2fasta
+  - lofreq         # Variant calling and indel qualities
+  - bedtools       # Used in summary script for genomecov
+  - bam-readcount  # Used in summary script for base counts
 
-- python
-- pandas
-- prinseq
-- biopython
-- blast
+  # Python Stack
+  - python=3.12     
+  - pandas         # Data manipulation
+  - biopython      # SeqIO for fasta handling
 
-- r
-- r-readr
-- r-dplyr
-- r-tidyr
-- r-ggplot2
-- r-stringr
-- r-cowplot
-- r-seqinr
+  # R Stack
+  - r-base
+  - r-readr
+  - r-dplyr
+  - r-tidyr
+  - r-ggplot2
+  - r-stringr
+  - r-cowplot      # For panel_border and theme logic
+  - r-seqinr       # For write.fasta in wts.R

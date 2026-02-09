@@ -1,0 +1,148 @@
+##fileformat=VCFv4.0
+##FILTER=<ID=PASS,Description="All filters passed">
+##fileDate=20260209
+##source=lofreq call -f /tmp/SmaltAlignOutputs_fbabd//demo_file_3_cons.fasta --no-default-filter -r unknown_unknown_unknown_test_ref_0_0_0:1-66 -o /tmp/lofreq2_call_paralleleczo00h5/0.vcf.gz /tmp/SmaltAlignOutputs_fbabd//demo_file_4.bam 
+##reference=/tmp/SmaltAlignOutputs_fbabd//demo_file_3_cons.fasta
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Raw Depth">
+##INFO=<ID=AF,Number=1,Type=Float,Description="Allele Frequency">
+##INFO=<ID=SB,Number=1,Type=Integer,Description="Phred-scaled strand bias at this position">
+##INFO=<ID=DP4,Number=4,Type=Integer,Description="Counts for ref-forward bases, ref-reverse, alt-forward and alt-reverse bases">
+##INFO=<ID=INDEL,Number=0,Type=Flag,Description="Indicates that the variant is an INDEL.">
+##INFO=<ID=CONSVAR,Number=0,Type=Flag,Description="Indicates that the variant is a consensus variant (as opposed to a low frequency variant).">
+##INFO=<ID=HRUN,Number=1,Type=Integer,Description="Homopolymer length to the right of report indel position">
+##FILTER=<ID=min_snvqual_42,Description="Minimum SNV Quality (Phred) 42">
+##FILTER=<ID=min_indelqual_20,Description="Minimum Indel Quality (Phred) 20">
+##FILTER=<ID=min_snvqual_43,Description="Minimum SNV Quality (Phred) 43">
+##contig=<ID=unknown_unknown_unknown_test_ref_0_0_0>
+##bcftools_concatVersion=1.23+htslib-1.23
+##bcftools_concatCommand=concat -a -O z -o /tmp/lofreq2_call_paralleleczo00h5/concat.vcf.gz /tmp/lofreq2_call_paralleleczo00h5/0.vcf.gz /tmp/lofreq2_call_paralleleczo00h5/1.vcf.gz /tmp/lofreq2_call_paralleleczo00h5/2.vcf.gz /tmp/lofreq2_call_paralleleczo00h5/3.vcf.gz /tmp/lofreq2_call_paralleleczo00h5/4.vcf.gz /tmp/lofreq2_call_paralleleczo00h5/5.vcf.gz /tmp/lofreq2_call_paralleleczo00h5/6.vcf.gz /tmp/lofreq2_call_paralleleczo00h5/7.vcf.gz; Date=Mon Feb  9 13:19:19 2026
+##FILTER=<ID=min_dp_10,Description="Minimum Coverage 10">
+##FILTER=<ID=sb_fdr,Description="Strand-Bias Multiple Testing Correction: fdr corr. pvalue > 0.001000">
+##FILTER=<ID=min_snvqual_52,Description="Minimum SNV Quality (Phred) 52">
+##FILTER=<ID=min_indelqual_20,Description="Minimum Indel Quality (Phred) 20">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+unknown_unknown_unknown_test_ref_0_0_0	102	.	T	G	49314	PASS	DP=43021;AF=0.09407;SB=4;DP4=21020,17818,2220,1827
+unknown_unknown_unknown_test_ref_0_0_0	103	.	G	A	49314	PASS	DP=43207;AF=0.094661;SB=1;DP4=21137,17935,2225,1865
+unknown_unknown_unknown_test_ref_0_0_0	104	.	G	A	49314	PASS	DP=43637;AF=0.093751;SB=4;DP4=21371,18139,2243,1848
+unknown_unknown_unknown_test_ref_0_0_0	111	.	T	C	105	PASS	DP=45047;AF=0.001909;SB=0;DP4=24523,20418,48,38
+unknown_unknown_unknown_test_ref_0_0_0	121	.	T	C	54	PASS	DP=46222;AF=0.002228;SB=26;DP4=24648,21422,71,32
+unknown_unknown_unknown_test_ref_0_0_0	128	.	A	G	151	PASS	DP=50644;AF=0.002784;SB=3;DP4=27188,23266,71,70
+unknown_unknown_unknown_test_ref_0_0_0	131	.	A	G	230	PASS	DP=52029;AF=0.004459;SB=105;DP4=28022,23711,75,157
+unknown_unknown_unknown_test_ref_0_0_0	132	.	G	A	49314	PASS	DP=52086;AF=0.207772;SB=13;DP4=22208,19020,5947,4875
+unknown_unknown_unknown_test_ref_0_0_0	133	.	A	G	200	PASS	DP=52710;AF=0.003187;SB=2;DP4=28367,24128,87,81
+unknown_unknown_unknown_test_ref_0_0_0	137	.	A	G	320	PASS	DP=50573;AF=0.002847;SB=0;DP4=27245,23131,78,66
+unknown_unknown_unknown_test_ref_0_0_0	140	.	A	G	63	PASS	DP=50570;AF=0.001681;SB=35;DP4=27198,23263,29,56
+unknown_unknown_unknown_test_ref_0_0_0	142	.	T	C	86	PASS	DP=52282;AF=0.002429;SB=0;DP4=28177,23899,70,57
+unknown_unknown_unknown_test_ref_0_0_0	145	.	T	C	366	PASS	DP=53710;AF=0.002476;SB=4;DP4=28944,24590,77,56
+unknown_unknown_unknown_test_ref_0_0_0	147	.	A	G	396	PASS	DP=53445;AF=0.003948;SB=78;DP4=28784,24382,73,138
+unknown_unknown_unknown_test_ref_0_0_0	152	.	T	C	138	PASS	DP=51875;AF=0.002275;SB=9;DP4=28055,23645,73,45
+unknown_unknown_unknown_test_ref_0_0_0	154	.	A	G	127	PASS	DP=54634;AF=0.002929;SB=12;DP4=29612,24799,75,85
+unknown_unknown_unknown_test_ref_0_0_0	160	.	A	G	257	PASS	DP=55874;AF=0.002452;SB=0;DP4=29882,25800,72,65
+unknown_unknown_unknown_test_ref_0_0_0	164	.	T	C	336	PASS	DP=56765;AF=0.002502;SB=15;DP4=30174,26419,89,53
+unknown_unknown_unknown_test_ref_0_0_0	168	.	A	G	71	PASS	DP=56109;AF=0.00196;SB=7;DP4=29643,26316,51,59
+unknown_unknown_unknown_test_ref_0_0_0	169	.	A	G	173	PASS	DP=55967;AF=0.002216;SB=106;DP4=29590,26196,29,95
+unknown_unknown_unknown_test_ref_0_0_0	171	.	T	C	196	PASS	DP=55984;AF=0.002197;SB=0;DP4=29449,26352,66,57
+unknown_unknown_unknown_test_ref_0_0_0	173	.	T	C	154	PASS	DP=54790;AF=0.001843;SB=3;DP4=28920,25732,57,44
+unknown_unknown_unknown_test_ref_0_0_0	174	.	G	A	67	PASS	DP=54776;AF=0.002191;SB=24;DP4=28878,25699,47,73
+unknown_unknown_unknown_test_ref_0_0_0	175	.	A	G	716	PASS	DP=54436;AF=0.003894;SB=3;DP4=28676,25494,107,105
+unknown_unknown_unknown_test_ref_0_0_0	177	.	A	G	496	PASS	DP=54722;AF=0.00307;SB=14;DP4=28836,25677,75,93
+unknown_unknown_unknown_test_ref_0_0_0	185	.	T	C	526	PASS	DP=55554;AF=0.003276;SB=27;DP4=29152,26159,117,65
+unknown_unknown_unknown_test_ref_0_0_0	187	.	A	G	537	PASS	DP=54494;AF=0.002899;SB=4;DP4=28433,25842,89,69
+unknown_unknown_unknown_test_ref_0_0_0	189	.	A	G	174	PASS	DP=55327;AF=0.002115;SB=4;DP4=28780,26378,56,61
+unknown_unknown_unknown_test_ref_0_0_0	191	.	T	C	268	PASS	DP=54939;AF=0.003859;SB=8;DP4=28489,26139,122,90
+unknown_unknown_unknown_test_ref_0_0_0	195	.	T	C	65	PASS	DP=56633;AF=0.002013;SB=31;DP4=29496,26972,78,36
+unknown_unknown_unknown_test_ref_0_0_0	200	.	T	C	368	PASS	DP=54282;AF=0.003058;SB=10;DP4=27975,26081,97,69
+unknown_unknown_unknown_test_ref_0_0_0	204	.	A	G	243	PASS	DP=53629;AF=0.001958;SB=4;DP4=27665,25825,49,56
+unknown_unknown_unknown_test_ref_0_0_0	213	.	A	G	343	PASS	DP=54143;AF=0.002493;SB=15;DP4=27798,26165,57,78
+unknown_unknown_unknown_test_ref_0_0_0	215	.	T	C	53	PASS	DP=53783;AF=0.001264;SB=2;DP4=27456,26218,32,36
+unknown_unknown_unknown_test_ref_0_0_0	217	.	T	C	207	PASS	DP=53529;AF=0.002186;SB=3;DP4=27301,26085,64,53
+unknown_unknown_unknown_test_ref_0_0_0	222	.	T	C	191	PASS	DP=54024;AF=0.003202;SB=10;DP4=27543,26226,100,73
+unknown_unknown_unknown_test_ref_0_0_0	226	.	A	G	203	PASS	DP=55812;AF=0.001863;SB=0;DP4=28636,27030,54,50
+unknown_unknown_unknown_test_ref_0_0_0	232	.	T	C	725	PASS	DP=54737;AF=0.003763;SB=6;DP4=28382,26105,116,90
+unknown_unknown_unknown_test_ref_0_0_0	233	.	T	C	276	PASS	DP=53644;AF=0.003411;SB=7;DP4=27887,25468,105,78
+unknown_unknown_unknown_test_ref_0_0_0	236	.	T	C	63	PASS	DP=54031;AF=0.002776;SB=5;DP4=28115,25652,85,65
+unknown_unknown_unknown_test_ref_0_0_0	239	.	T	C	221	PASS	DP=54641;AF=0.004008;SB=44;DP4=28332,26009,145,74
+unknown_unknown_unknown_test_ref_0_0_0	243	.	A	G	102	PASS	DP=53150;AF=0.001449;SB=5;DP4=27743,25287,35,42
+unknown_unknown_unknown_test_ref_0_0_0	253	.	A	G	89	PASS	DP=48298;AF=0.002981;SB=19;DP4=24758,23318,59,85
+unknown_unknown_unknown_test_ref_0_0_0	261	.	A	G	56	PASS	DP=52070;AF=0.001517;SB=7;DP4=26476,25483,34,45
+unknown_unknown_unknown_test_ref_0_0_0	266	.	T	C	410	PASS	DP=49212;AF=0.003251;SB=4;DP4=25318,23687,77,83
+unknown_unknown_unknown_test_ref_0_0_0	268	.	T	C	328	PASS	DP=49569;AF=0.003833;SB=17;DP4=25266,24025,114,76
+unknown_unknown_unknown_test_ref_0_0_0	277	.	A	G	81	PASS	DP=49180;AF=0.002643;SB=16;DP4=24635,24337,52,78
+unknown_unknown_unknown_test_ref_0_0_0	283	.	T	C	108	PASS	DP=50386;AF=0.002005;SB=1;DP4=24640,25598,48,53
+unknown_unknown_unknown_test_ref_0_0_0	286	.	T	C	108	PASS	DP=50714;AF=0.002958;SB=91;DP4=24746,25735,111,39
+unknown_unknown_unknown_test_ref_0_0_0	289	.	T	C	260	PASS	DP=50719;AF=0.002957;SB=2;DP4=24916,25590,78,72
+unknown_unknown_unknown_test_ref_0_0_0	290	.	T	C	442	PASS	DP=50931;AF=0.003888;SB=11;DP4=24897,25726,110,88
+unknown_unknown_unknown_test_ref_0_0_0	293	.	A	G	79	PASS	DP=51524;AF=0.002018;SB=9;DP4=25221,26149,43,61
+unknown_unknown_unknown_test_ref_0_0_0	294	.	A	G	213	PASS	DP=51116;AF=0.002211;SB=18;DP4=24929,26039,42,71
+unknown_unknown_unknown_test_ref_0_0_0	296	.	A	G	204	PASS	DP=50538;AF=0.002414;SB=4;DP4=24641,25732,54,68
+unknown_unknown_unknown_test_ref_0_0_0	299	.	A	G	128	PASS	DP=54286;AF=0.002339;SB=18;DP4=26554,27548,48,79
+unknown_unknown_unknown_test_ref_0_0_0	301	.	T	C	696	PASS	DP=53997;AF=0.003908;SB=8;DP4=26466,27265,115,96
+unknown_unknown_unknown_test_ref_0_0_0	303	.	A	G	55	PASS	DP=55281;AF=0.001737;SB=3;DP4=27153,27971,43,53
+unknown_unknown_unknown_test_ref_0_0_0	305	.	A	G	191	PASS	DP=56009;AF=0.003035;SB=1;DP4=27206,28564,80,90
+unknown_unknown_unknown_test_ref_0_0_0	307	.	A	C	1892	PASS	DP=52833;AF=0.006946;SB=7;DP4=25732,26507,194,173
+unknown_unknown_unknown_test_ref_0_0_0	307	.	A	G	547	PASS	DP=52833;AF=0.003804;SB=35;DP4=25732,26507,73,128
+unknown_unknown_unknown_test_ref_0_0_0	309	.	A	G	111	PASS	DP=51680;AF=0.002303;SB=8;DP4=25295,26228,50,69
+unknown_unknown_unknown_test_ref_0_0_0	311	.	A	G	102	PASS	DP=50737;AF=0.002385;SB=36;DP4=24837,25729,39,82
+unknown_unknown_unknown_test_ref_0_0_0	318	.	A	G	72	PASS	DP=50378;AF=0.002501;SB=21;DP4=24435,25744,46,80
+unknown_unknown_unknown_test_ref_0_0_0	320	.	A	G	305	PASS	DP=51333;AF=0.005552;SB=209;DP4=24961,26001,61,224
+unknown_unknown_unknown_test_ref_0_0_0	322	.	A	G	81	PASS	DP=50413;AF=0.002797;SB=25;DP4=24479,25741,51,90
+unknown_unknown_unknown_test_ref_0_0_0	323	.	A	G	106	PASS	DP=50472;AF=0.003031;SB=118;DP4=24535,25743,32,121
+unknown_unknown_unknown_test_ref_0_0_0	324	.	A	G	644	PASS	DP=50587;AF=0.004369;SB=47;DP4=24533,25764,76,145
+unknown_unknown_unknown_test_ref_0_0_0	326	.	A	G	75	PASS	DP=51397;AF=0.002062;SB=27;DP4=24781,26468,35,71
+unknown_unknown_unknown_test_ref_0_0_0	327	.	A	G	102	PASS	DP=51227;AF=0.002128;SB=22;DP4=24652,26427,38,71
+unknown_unknown_unknown_test_ref_0_0_0	329	.	A	G	188	PASS	DP=49803;AF=0.003715;SB=42;DP4=23894,25646,62,123
+unknown_unknown_unknown_test_ref_0_0_0	350	.	A	G	557	PASS	DP=50725;AF=0.002937;SB=9;DP4=23658,26876,60,89
+unknown_unknown_unknown_test_ref_0_0_0	353	.	A	G	52	PASS	DP=52678;AF=0.002373;SB=4;DP4=24547,27898,53,72
+unknown_unknown_unknown_test_ref_0_0_0	355	.	T	C	56	PASS	DP=51780;AF=0.002491;SB=27;DP4=24114,27441,78,51
+unknown_unknown_unknown_test_ref_0_0_0	357	.	A	G	102	PASS	DP=53263;AF=0.001633;SB=3;DP4=24886,28258,37,50
+unknown_unknown_unknown_test_ref_0_0_0	362	.	A	G	207	PASS	DP=50865;AF=0.002752;SB=3;DP4=23618,27057,70,70
+unknown_unknown_unknown_test_ref_0_0_0	365	.	A	G	127	PASS	DP=49015;AF=0.003224;SB=15;DP4=22757,26021,60,98
+unknown_unknown_unknown_test_ref_0_0_0	368	.	A	G	105	PASS	DP=49047;AF=0.002834;SB=18;DP4=22739,26115,50,89
+unknown_unknown_unknown_test_ref_0_0_0	369	.	T	C	54	PASS	DP=48482;AF=0.002083;SB=15;DP4=22443,25871,58,43
+unknown_unknown_unknown_test_ref_0_0_0	373	.	A	G	206	PASS	DP=48583;AF=0.002799;SB=3;DP4=22063,26301,57,79
+unknown_unknown_unknown_test_ref_0_0_0	374	.	A	G	133	PASS	DP=48463;AF=0.002063;SB=0;DP4=21943,26375,46,54
+unknown_unknown_unknown_test_ref_0_0_0	378	.	A	G	53	PASS	DP=48567;AF=0.002018;SB=11;DP4=21953,26474,35,63
+unknown_unknown_unknown_test_ref_0_0_0	382	.	T	C	224	PASS	DP=47649;AF=0.002204;SB=14;DP4=21261,26251,58,47
+unknown_unknown_unknown_test_ref_0_0_0	385	.	A	G	388	PASS	DP=46585;AF=0.003392;SB=24;DP4=20855,25532,53,105
+unknown_unknown_unknown_test_ref_0_0_0	389	.	A	G	81	PASS	DP=46228;AF=0.002315;SB=1;DP4=20455,25610,45,62
+unknown_unknown_unknown_test_ref_0_0_0	394	.	A	G	89	PASS	DP=47995;AF=0.001583;SB=6;DP4=21448,26457,28,48
+unknown_unknown_unknown_test_ref_0_0_0	396	.	G	A	108	PASS	DP=46996;AF=0.002128;SB=32;DP4=20689,26182,27,73
+unknown_unknown_unknown_test_ref_0_0_0	404	.	T	C	114	PASS	DP=45176;AF=0.003055;SB=4;DP4=20076,24900,56,82
+unknown_unknown_unknown_test_ref_0_0_0	408	.	A	G	88	PASS	DP=41870;AF=0.001648;SB=4;DP4=18520,23259,35,34
+unknown_unknown_unknown_test_ref_0_0_0	416	.	A	G	303	PASS	DP=40431;AF=0.002572;SB=12;DP4=18218,22089,37,67
+unknown_unknown_unknown_test_ref_0_0_0	417	.	C	T	67	PASS	DP=40422;AF=0.001732;SB=0;DP4=18190,22144,32,38
+unknown_unknown_unknown_test_ref_0_0_0	418	.	A	G	230	PASS	DP=38745;AF=0.002658;SB=8;DP4=17517,21084,39,64
+unknown_unknown_unknown_test_ref_0_0_0	423	.	A	G	164	PASS	DP=37098;AF=0.003019;SB=1;DP4=17007,19950,54,58
+unknown_unknown_unknown_test_ref_0_0_0	428	.	A	G	162	PASS	DP=37312;AF=0.003163;SB=12;DP4=17160,19971,44,74
+unknown_unknown_unknown_test_ref_0_0_0	431	.	T	C	52	PASS	DP=35897;AF=0.001727;SB=6;DP4=16547,19253,34,28
+unknown_unknown_unknown_test_ref_0_0_0	437	.	A	G	240	PASS	DP=33407;AF=0.002844;SB=0;DP4=15464,17822,45,50
+unknown_unknown_unknown_test_ref_0_0_0	439	.	A	G	153	PASS	DP=33444;AF=0.002512;SB=2;DP4=15465,17863,42,42
+unknown_unknown_unknown_test_ref_0_0_0	443	.	A	G	490	PASS	DP=32810;AF=0.003536;SB=5;DP4=15140,17525,48,68
+unknown_unknown_unknown_test_ref_0_0_0	445	.	A	G	80	PASS	DP=32999;AF=0.002212;SB=25;DP4=15274,17628,21,52
+unknown_unknown_unknown_test_ref_0_0_0	450	.	A	G	77	PASS	DP=31014;AF=0.001515;SB=0;DP4=14250,16705,21,26
+unknown_unknown_unknown_test_ref_0_0_0	458	.	A	G	197	PASS	DP=29351;AF=0.00293;SB=5;DP4=13293,15949,34,52
+unknown_unknown_unknown_test_ref_0_0_0	459	.	G	T	71	PASS	DP=28612;AF=0.002272;SB=8;DP4=12992,15513,36,29
+unknown_unknown_unknown_test_ref_0_0_0	461	.	A	G	108	PASS	DP=28002;AF=0.002178;SB=10;DP4=12777,15151,21,40
+unknown_unknown_unknown_test_ref_0_0_0	462	.	A	G	74	PASS	DP=28009;AF=0.002178;SB=4;DP4=12767,15165,24,37
+unknown_unknown_unknown_test_ref_0_0_0	467	.	T	C	55	PASS	DP=27229;AF=0.002093;SB=21;DP4=12325,14819,36,21
+unknown_unknown_unknown_test_ref_0_0_0	470	.	A	G	151	PASS	DP=26673;AF=0.003412;SB=1;DP4=12047,14495,43,48
+unknown_unknown_unknown_test_ref_0_0_0	471	.	A	G	88	PASS	DP=26452;AF=0.002041;SB=11;DP4=11992,14390,18,36
+unknown_unknown_unknown_test_ref_0_0_0	472	.	C	T	49314	PASS	DP=26140;AF=0.307422;SB=13;DP4=8265,9814,3567,4469
+unknown_unknown_unknown_test_ref_0_0_0	474	.	A	G	74	PASS	DP=25558;AF=0.001917;SB=0;DP4=11577,13915,23,26
+unknown_unknown_unknown_test_ref_0_0_0	477	.	A	T	4391	PASS	DP=22459;AF=0.018033;SB=7;DP4=10100,11886,172,233
+unknown_unknown_unknown_test_ref_0_0_0	478	.	A	G	92	PASS	DP=22227;AF=0.001845;SB=1;DP4=10174,12003,20,21
+unknown_unknown_unknown_test_ref_0_0_0	481	.	A	C	553	PASS	DP=21158;AF=0.005435;SB=0;DP4=9612,11407,52,63
+unknown_unknown_unknown_test_ref_0_0_0	482	.	A	G	263	PASS	DP=19753;AF=0.003544;SB=4;DP4=9058,10609,28,42
+unknown_unknown_unknown_test_ref_0_0_0	484	.	T	C	83	PASS	DP=19059;AF=0.002886;SB=34;DP4=8743,10240,39,16
+unknown_unknown_unknown_test_ref_0_0_0	486	.	A	G	56	PASS	DP=18224;AF=0.002469;SB=7;DP4=8371,9792,16,29
+unknown_unknown_unknown_test_ref_0_0_0	487	.	A	G	160	PASS	DP=18061;AF=0.003267;SB=17;DP4=8288,9683,18,41
+unknown_unknown_unknown_test_ref_0_0_0	491	.	A	G	95	PASS	DP=15117;AF=0.002977;SB=0;DP4=6963,8099,21,24
+unknown_unknown_unknown_test_ref_0_0_0	492	.	A	G	116	PASS	DP=15072;AF=0.003384;SB=21;DP4=6944,8065,14,37
+unknown_unknown_unknown_test_ref_0_0_0	497	.	T	C	96	PASS	DP=13051;AF=0.002988;SB=6;DP4=5950,7048,22,17
+unknown_unknown_unknown_test_ref_0_0_0	499	.	A	G	144	PASS	DP=12614;AF=0.004122;SB=7;DP4=5723,6822,29,23
+unknown_unknown_unknown_test_ref_0_0_0	501	.	A	G	195	PASS	DP=11252;AF=0.004266;SB=1;DP4=5105,6089,20,28
+unknown_unknown_unknown_test_ref_0_0_0	503	.	A	G	178	PASS	DP=10973;AF=0.005741;SB=1;DP4=4924,5977,30,33
+unknown_unknown_unknown_test_ref_0_0_0	504	.	A	G	121	PASS	DP=10913;AF=0.003757;SB=2;DP4=4872,5980,16,25
+unknown_unknown_unknown_test_ref_0_0_0	505	.	T	G	1642	PASS	DP=10726;AF=0.014637;SB=9;DP4=4734,5824,81,76
+unknown_unknown_unknown_test_ref_0_0_0	507	.	A	G	405	PASS	DP=9945;AF=0.006938;SB=10;DP4=4368,5495,38,31
+unknown_unknown_unknown_test_ref_0_0_0	508	.	A	G	407	PASS	DP=9896;AF=0.005861;SB=8;DP4=4365,5470,20,38

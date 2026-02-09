@@ -1,6 +1,6 @@
 language: python
 python:
-  - "2.7"
+  - "3.12"
 install:
   - sudo apt-get update
   - wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
@@ -13,7 +13,8 @@ install:
   - conda info -a
 
   - conda env create -f ./environment.yml
-  - source activate SmaltAlign
+  - source activate smaltalign
 
 script:
-  ./smaltalign.sh -r References/HCV-1a.fasta -n 10000 ./tests/HCV-1a_generated.fastq.gz
+  ./SmaltAlign/smaltalign.sh -r ./demo/Reference_sequences/demo_ref.fasta -o ./demo/example_output_smaltalign/ ./demo/demo_file.fastq.gz
+  ./SmaltAlign/batch_influenza.sh -s ./demo/ -o ./demo/example_output_batch_influenza/ -r ./demo/Reference_sequences/

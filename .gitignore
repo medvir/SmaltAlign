@@ -6,6 +6,7 @@
 ._smaltalign.sh
 ._wts.R
 References/*.fasta.fai
+References/*.fasta.*
 ._sampleID_to_filename.xltx
 flugenomes*.fasta.*
 .venv/
