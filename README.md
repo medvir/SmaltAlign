@@ -23,7 +23,11 @@ SmaltAlign also offers the option to proxess influenza sequences and analyse eac
 1. Iteration over all `.fastq.gz` files in the current directory.
 2. Create a folder for each sample containing segment 1-8 subfolders.
 3. If a reference folder containing a reference per segment is not provided or does not exist, then it runs `select_ref_segments.py`, which selects the best reference sequence for each segment from a Influenza reference database (selected sequences from the [NCBI Influenza Virus Database](https://www.ncbi.nlm.nih.gov/genomes/FLU/Database/nph-select.cgi?go=database))
+
+
 ![IV-A references](References/genomes_query.png)
+
+
 4. Using the best reference sequence, run `smaltalign.sh` for each segment, including `cov_plot.R` and `wts.R`.
 
 ## System requirements
@@ -76,20 +80,31 @@ The pipeline relies on Python and R for data manipulation and visualization.
 
 ## Installation Guide
 
-For a complete installation, please follow this 3 steps:
+For a complete installation, please follow these 3 steps:
 
-1. Install Conda: you need to have [Conda](https://docs.conda.io/en/latest/) installed.
-2. Create the environment using the provided environment.yml.
+1. Clone/Copy the scripts into a local directory and ensure they are executable:
+
+```
+git clone https://github.com/medvir/SmaltAlign.git
+```
+
+```
+chmod +x SmaltAlign/SmaltAlign/*.sh SmaltAlign/SmaltAlign/*.py SmaltAlign/SmaltAlign/*.R
+```
+
+2. Install Conda: you need to have [Conda](https://docs.conda.io/en/latest/) installed.
+
+3. Create the environment using the provided environment.yml.
 
 To ensure you have all dependencies needed for SmaltAlign, you can use the `environment.yml` file.  
-With the command `conda env create -f <path>/environment.yml` you will create a copy of the smaltalign environment.  
-You enter the environment with the command `conda activate smaltalign` (and leave it with `conda deactivate`).  
-For more information visit following link to [Managing environments](https://conda.io/docs/using/envs.html).
 
-3. Clone/Copy the scripts into a local directory and ensure they are executable:
+With this command, you will create a copy of the smaltalign environment:
 
-`git clone https://github.com/medvir/SmaltAlign.git`
-`chmod +x *.sh *.py *.R`
+`conda env create -f SmaltAlign/environment.yml`
+
+You enter the environment with `conda activate smaltalign` (and leave it with `conda deactivate`).  
+
+For more information, visit the following link [Managing environments](https://conda.io/docs/using/envs.html).
 
 #### Typical Install Time
 On a normal desktop computer, the installation is expected to take about 10 minutes (mostly dependent on internet speed for downloading packages).
@@ -99,11 +114,17 @@ You can run a demo on a single mock sample using the core script, `smaltalign.sh
 
 To run `smaltaign.sh`, you will need a sample FASTQ (available in the folder `Demo`) and a single reference FASTA (available in the same `Demo` folder).
 Then, you can copy the following command:
-`./SmaltAlign/smaltalign.sh -r ./demo/Reference_sequences/demo_ref.fasta -o ./demo/example_output_smaltalign/ ./demo/demo_file.fastq.gz`
+
+```bash
+SmaltAlign/SmaltAlign/smaltalign.sh -r SmaltAlign/demo/Reference_sequences/demo_ref.fasta -o SmaltAlign/demo/example_output_smaltalign/ SmaltAlign/demo/demo_file.fastq.gz
+```
 
 To run `batch_influenza.sh`, you will need the same FASTQ file, and a few reference FASTA files, one per segment (also available in the `Demo` folder).
 Then, you can copy the following command:
-`./SmaltAlign/batch_influenza.sh -s ./demo/ -o ./demo/example_output_batch_influenza/ -r ./demo/Reference_sequences/`
+
+```bash
+SmaltAlign/SmaltAlign/batch_influenza.sh -s SmaltAlign/demo/ -o SmaltAlign/demo/example_output_batch_influenza/ -r SmaltAlign/demo/Reference_sequences/
+```
 
 #### Expected output
 The following files will be generated in ./demo_results:
@@ -149,7 +170,7 @@ However, if you would like to anlayse multiple FASTQ files at a time, you can sp
 By default, the tool subsamples the sequencing reads to 200000. However, this number can be changed by the users.  
 If you would like to analyse all sequencing reads without subsampling, then use -n "all".
 
-## `batch_influenza.sh` usage
+### `batch_influenza.sh` usage
 
 batch_influenza.sh [options]  
 Options:  
