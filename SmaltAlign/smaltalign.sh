@@ -443,6 +443,9 @@ for i in $list; do
 		rm -f ${new_outdir}/${name}_reads.fastq
 		rm -f ${new_outdir}/${name}_reads_contigs.fasta
 	fi
+	if [[ $alltogether == 1 ]]; then
+    	rm -rf ${outdir}/MergedInput
+	fi
 	rm -rf ${new_outdir}/${name}
 	
 	Rscript ${script_dir}/cov_plot.R ${new_outdir}
